@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bocconauta">
+<meta name="theme-color" content="#F8F8FA">
+<title>Bocconauta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+:root{
+  /* ─── SURFACES ─── */
+  --bg:#F8F8FA;
+  --bg-grad:radial-gradient(140% 90% at 50% -5%, #EEF0FF 0%, #F4F4F8 45%, #F8F8FA 100%);
+  --card:#FFFFFF;
+  --card2:#F2F3F9;
+  --line:#E8E9F2;
+  --line2:#D4D6E8;
+  /* ─── INK ─── */
+  --ink:#0D0F1A;
+  --muted:#6B6F8A;
+  --faint:#A8ABBE;
+  /* ─── BRAND (deep space blue) ─── */
+  --blue:#1B2FE8;
+  --blue-h:#2E40F0;
+  --blue-d:#1020C0;
+  --blue-t:#EEF0FF;
+  --indigo:#6C47FF;
+  --indigo-t:#F0ECFF;
+  /* ─── ACCENTS ─── */
+  --tomato:#F0532B;
+  --tomato-t:#FEE9E2;
+  --sun:#FFB800;
+  --sun-t:#FFF4D6;
+  --grape:#8B5CF6;
+  --grape-t:#F2EEFE;
+  --sky:#0EA5E9;
+  --sky-t:#E0F4FE;
+  --nebula:#FF6B9D;
+  --nebula-t:#FFE8F2;
+  /* ─── PIZZA RATING ─── */
+  --pizza:#F0532B;
+  --pizza-off:#D4D6E8;
+  /* ─── FX ─── */
+  --shadow-sm:0 2px 10px -3px rgba(13,15,60,.10);
+  --shadow:0 10px 28px -10px rgba(13,15,60,.16);
+  --shadow-lg:0 22px 50px -16px rgba(13,15,60,.22);
+  --glow-blue:0 8px 28px -6px rgba(27,47,232,.35);
+  --fd:'Bricolage Grotesque',sans-serif;
+  --fb:'Plus Jakarta Sans',sans-serif;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb);-webkit-font-smoothing:antialiased;overflow:hidden}
+
+/* ─── ICON BASE ─── */
+.ic{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;vertical-align:middle}
+.ic svg{display:block}
+.pz{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;line-height:1;filter:grayscale(1) opacity(.28);transition:filter .15s,transform .12s}
+.pz.on{filter:none}
+
+/* ─── APP SHELL ─── */
+#app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:var(--bg-grad)}
+
+/* ─── HEADER ─── */
+.hdr{
+  padding:calc(var(--st) + 18px) 18px 10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-mark{
+  width:38px;height:38px;border-radius:13px;
+  background:linear-gradient(135deg,var(--blue-h),var(--indigo));
+  box-shadow:var(--glow-blue);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transform:rotate(-4deg);
+}
+.logo{font-family:var(--fd);font-size:24px;font-weight:800;letter-spacing:-.8px;line-height:1;color:var(--ink)}
+.logo em{color:var(--blue);font-style:normal}
+.hdr-meta{
+  font-size:12px;color:#1020C0;font-weight:700;
+  background:#EEF0FF;padding:6px 12px;border-radius:999px;
+}
+
+/* ─── TABS (segmented) ─── */
+.tabs{display:flex;margin:12px 16px 0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:5px;gap:5px;flex-shrink:0;box-shadow:var(--shadow-sm)}
+.tab{
+  flex:1;padding:11px 0;font-size:13px;font-weight:700;color:var(--muted);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;border:none;background:none;
+  font-family:var(--fb);transition:all .18s;border-radius:12px;
+}
+.tab .ic{opacity:.9}
+.tab.on{background:linear-gradient(135deg,var(--blue-h),var(--indigo));color:#fff !important;box-shadow:var(--glow-blue)}
+.tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;background:var(--tomato);color:#fff;
+  font-size:9.5px;font-weight:800;border-radius:9px;min-width:17px;padding:1px 5px;
+}
+
+/* ─── VIEWS ─── */
+.view{display:none;flex:1;overflow:hidden;flex-direction:column}
+.view.on{display:flex}
+
+/* ─── STASERA ─── */
+.stasera-wrap{padding:16px 16px 0;flex-shrink:0}
+.stasera-btn{
+  width:100%;background:linear-gradient(135deg,var(--blue-h),var(--indigo));border:none;border-radius:20px;
+  padding:17px 18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  color:#fff !important;font-family:var(--fd);font-size:16px;font-weight:800;letter-spacing:-.3px;
+  transition:transform .12s,box-shadow .2s;box-shadow:var(--glow-blue);
+}
+.stasera-btn:active{transform:scale(.985)}
+.stasera-left{display:flex;align-items:center;gap:11px}
+.stasera-right{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700}
+.stasera-pill{background:rgba(255,255,255,.22);padding:4px 11px;border-radius:999px}
+
+/* ─── SEARCH ─── */
+.search-wrap{padding:12px 16px 0;flex-shrink:0;position:relative}
+.search-box{
+  width:100%;background:var(--card);border:1.5px solid var(--line);
+  border-radius:15px;padding:13px 14px 13px 44px;
+  color:var(--ink);font-family:var(--fb);font-size:14px;font-weight:500;outline:none;
+  transition:border-color .2s,box-shadow .2s;box-shadow:var(--shadow-sm);
+}
+.search-box:focus{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-t)}
+.search-box::placeholder{color:var(--faint);font-weight:500}
+.s-ico{position:absolute;left:30px;top:50%;transform:translateY(-50%);color:var(--faint);pointer-events:none;display:flex}
+.ac{
+  position:absolute;left:16px;right:16px;top:calc(100% + 6px);
+  background:var(--card);border:1px solid var(--line);
+  border-radius:16px;z-index:60;overflow:hidden;display:none;box-shadow:var(--shadow-lg);
+}
+.ac-row{padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.ac-row:last-child{border-bottom:none}
+.ac-row:active{background:var(--card2)}
+.ac-ico{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ac-name{font-size:13.5px;font-weight:700}
+.ac-addr{font-size:11.5px;color:var(--muted);margin-top:1px;font-weight:500}
+
+/* ─── FILTERS ─── */
+.filters{display:flex;gap:8px;padding:14px 16px 2px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.filters::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0;background:var(--card);border:1.5px solid var(--line);
+  border-radius:999px;padding:8px 15px;font-size:12.5px;color:var(--muted);
+  cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--fb);font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ─── SCROLL ─── */
+.scroll{flex:1;overflow-y:auto;padding:20px 16px calc(var(--sb)+18px);-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ─── PLACE CARD ─── */
+.pcard{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:11px 12px;margin-bottom:7px;cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+  transition:transform .12s,box-shadow .2s;box-shadow:var(--shadow-sm);
+}
+.pcard:active{transform:scale(.99)}
+.pcard.unrated{border-color:var(--tomato-t)}
+.pc-type{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.pc-left{flex:1;min-width:0}
+.pc-name{font-family:var(--fd);font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
+.pc-sub{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
+.pc-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.pc-pizze{display:flex;gap:2px}
+.badge-new{font-size:10px;background:var(--tomato);color:#fff;border-radius:999px;padding:3px 9px;font-family:var(--fb);font-weight:700;letter-spacing:.2px}
+
+/* ─── EMPTY ─── */
+.empty{text-align:center;padding:60px 28px;color:var(--muted)}
+.empty-icon{color:var(--line2);margin-bottom:16px;display:flex;justify-content:center}
+.empty-title{font-family:var(--fd);font-size:17px;color:var(--ink);font-weight:700;margin-bottom:7px}
+.empty p{font-size:13px;line-height:1.6;font-weight:500}
+
+/* ─── BADGE VIEW ─── */
+.badge-scroll{flex:1;overflow-y:auto;padding:16px 16px calc(var(--sb)+18px);-webkit-overflow-scrolling:touch}
+.badge-scroll::-webkit-scrollbar{display:none}
+.badge-stats{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:18px 16px;margin-bottom:24px;box-shadow:var(--shadow-sm);
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;
+}
+.bstat{text-align:center;padding:0 8px;position:relative}
+.bstat+.bstat::before{content:'';position:absolute;left:0;top:8%;height:84%;width:1px;background:var(--line)}
+.bstat-num{font-family:var(--fd);font-size:27px;font-weight:800;color:var(--blue);letter-spacing:-1px;line-height:1}
+.bstat-lbl{font-size:11px;color:var(--muted);margin-top:5px;font-weight:600}
+.badge-cat-title{
+  font-family:var(--fd);font-size:13px;font-weight:800;color:var(--ink);
+  letter-spacing:-.2px;margin-bottom:14px;margin-top:26px;display:flex;align-items:center;gap:8px;
+}
+.badge-cat-title::before{content:'';width:9px;height:9px;border-radius:3px;background:var(--cat,var(--blue))}
+.badge-cat-title:first-of-type{margin-top:0}
+.badge-ring-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px;margin-bottom:4px;
+}
+.badge-ring-item{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s;
+}
+.badge-ring-item:active{transform:scale(.95)}
+.badge-ring-item.locked{opacity:.55}
+.ring-wrap{position:relative;width:66px;height:66px;flex-shrink:0;background:var(--card);border-radius:50%;box-shadow:var(--shadow-sm)}
+.ring-wrap svg.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ring-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--cat,var(--blue))}
+.badge-ring-item.locked .ring-icon{color:var(--faint)}
+.ring-name{font-size:10.5px;color:var(--ink);font-weight:600;text-align:center;line-height:1.3;max-width:70px}
+.ring-new{position:absolute;top:1px;right:3px;width:12px;height:12px;background:var(--tomato);border-radius:50%;border:2.5px solid var(--card)}
+
+/* ─── DETAIL SHEET ─── */
+.sheet-overlay{
+  position:fixed;inset:0;background:rgba(10,12,40,.45);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.sheet-overlay.open{opacity:1;pointer-events:all}
+.sheet{
+  background:var(--bg);border-radius:26px 26px 0 0;
+  width:100%;max-width:480px;height:93dvh;
+  display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .34s cubic-bezier(.32,.72,0,1);
+}
+.sheet-overlay.open .sheet{transform:translateY(0)}
+.sheet-handle{width:42px;height:5px;background:var(--line2);border-radius:3px;margin:11px auto 0;flex-shrink:0}
+.sheet-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 calc(var(--sb)+24px)}
+.sheet-scroll::-webkit-scrollbar{display:none}
+.sh-hdr{padding:18px 18px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.sh-hdr-left{display:flex;align-items:center;gap:13px;min-width:0}
+.sh-type-ico{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sh-name{font-family:var(--fd);font-size:22px;font-weight:800;line-height:1.08;letter-spacing:-.5px}
+.sh-type{font-size:12.5px;color:var(--muted);margin-top:4px;font-weight:600}
+.sh-close{background:var(--card);border:1px solid var(--line);border-radius:50%;width:36px;height:36px;color:var(--muted);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
+.global-rating{margin:18px 16px 0;background:var(--blue-t);border-radius:20px;padding:17px 18px;display:flex;align-items:center;justify-content:space-between}
+.gr-label{font-size:11px;color:var(--blue-d);margin-bottom:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+.gr-pizze{display:flex;gap:6px}
+.gr-pizza{cursor:pointer}
+.gr-pizza:active .pz{transform:scale(1.18)}
+.gr-right{text-align:right}
+.gr-txt{font-family:var(--fd);font-size:30px;font-weight:800;color:var(--blue-d);line-height:1;letter-spacing:-1px}
+.gr-txt small{font-size:15px;color:var(--blue);font-weight:700}
+.gr-sub{font-size:11.5px;color:var(--blue-d);margin-top:4px;font-weight:600;opacity:.8}
+.ig-strip{margin:12px 16px 0;display:flex;gap:10px}
+.ig-btn{flex:1;background:var(--sky-t);color:var(--sky);border:none;border-radius:14px;padding:13px 14px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:var(--fb);display:flex;align-items:center;justify-content:center;gap:8px}
+.del-btn{background:var(--tomato-t);color:var(--tomato);border:none;border-radius:14px;padding:13px 14px;cursor:pointer;font-family:var(--fb);display:flex;align-items:center;justify-content:center;gap:8px;font-size:13.5px;font-weight:700}
+.sec-title{font-family:var(--fd);font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.2px;padding:24px 18px 11px}
+.food-card{background:var(--card);border-radius:18px;margin:0 16px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.food-row{padding:13px 15px;border-bottom:1px solid var(--line)}
+.food-row:last-child{border-bottom:none}
+.fr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:10px}
+.fr-label{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:10px;min-width:0}
+.fr-icon{width:34px;height:34px;border-radius:11px;background:var(--blue-t);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fr-pizze{display:flex;gap:4px;flex-shrink:0}
+.fr-pizza{cursor:pointer}
+.fr-pizza:active .pz{transform:scale(1.12)}
+.fr-note{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:11px;padding:9px 11px;color:var(--ink);font-family:var(--fb);font-size:12.5px;font-weight:500;outline:none;resize:none;line-height:1.5;transition:border-color .2s}
+.fr-note:focus{border-color:var(--blue)}
+.fr-note::placeholder{color:var(--faint)}
+.tags-wrap{padding:0 16px;display:flex;flex-wrap:wrap;gap:9px}
+.atm-tag{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;color:var(--muted);cursor:pointer;transition:all .15s;font-family:var(--fb);font-weight:600}
+.atm-tag.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.final-note{width:calc(100% - 32px);margin:0 16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;color:var(--ink);font-family:var(--fb);font-size:13.5px;font-weight:500;outline:none;resize:none;line-height:1.55;transition:border-color .2s;box-shadow:var(--shadow-sm)}
+.final-note:focus{border-color:var(--blue)}
+.final-note::placeholder{color:var(--faint)}
+.save-btn{margin:18px 16px 0;width:calc(100% - 32px);background:linear-gradient(135deg,var(--blue-h),var(--indigo));border:none;border-radius:16px;padding:15px;color:#fff;font-family:var(--fd);font-size:15px;font-weight:800;cursor:pointer;transition:transform .12s;box-shadow:var(--glow-blue)}
+.save-btn:active{transform:scale(.99)}
+
+/* ─── MODAL STASERA ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,12,40,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg);border-radius:26px 26px 0 0;width:100%;max-width:480px;padding:8px 0 calc(var(--sb)+24px);max-height:76dvh;overflow-y:auto;transform:translateY(100%);transition:transform .34s cubic-bezier(.32,.72,0,1)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-handle{width:42px;height:5px;background:var(--line2);border-radius:3px;margin:11px auto 16px}
+.modal-title{font-family:var(--fd);font-size:20px;font-weight:800;padding:0 18px 4px;letter-spacing:-.5px}
+.modal-sub{font-size:12.5px;color:var(--muted);padding:0 18px 16px;font-weight:600}
+.tn-card{margin:0 16px 11px;background:var(--card);border:1px solid var(--line);border-radius:17px;padding:14px 15px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:var(--shadow-sm)}
+.tn-name{font-family:var(--fd);font-size:15px;font-weight:700;letter-spacing:-.3px}
+.tn-pizze{display:flex;gap:2px;margin-top:5px}
+.tn-type{font-size:11.5px;color:var(--muted);margin-top:6px;font-weight:600}
+.tn-go{flex-shrink:0;background:linear-gradient(135deg,var(--blue-h),var(--indigo));color:#fff;border:none;border-radius:11px;padding:10px 16px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:var(--fb)}
+.no-top{text-align:center;padding:34px 22px;color:var(--muted);font-size:13.5px;line-height:1.7;font-weight:500}
+.no-top .ic{color:var(--line2);margin-bottom:12px;display:flex;justify-content:center}
+
+/* ─── BADGE UNLOCK POPUP ─── */
+.unlock-overlay{position:fixed;inset:0;background:rgba(10,12,40,.55);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.unlock-overlay.show{opacity:1;pointer-events:all}
+.unlock-box{background:var(--card);border:2px solid var(--cat,var(--blue));border-radius:26px;padding:36px 30px;text-align:center;max-width:300px;transform:scale(.82);transition:transform .32s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--shadow-lg)}
+.unlock-overlay.show .unlock-box{transform:scale(1)}
+.unlock-icon{width:84px;height:84px;border-radius:50%;background:var(--cat-t,var(--blue-t));color:var(--cat,var(--blue));display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.unlock-label{font-size:11px;color:var(--cat,var(--blue));font-weight:800;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:8px}
+.unlock-name{font-family:var(--fd);font-size:23px;font-weight:800;margin-bottom:9px;letter-spacing:-.5px}
+.unlock-desc{font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:24px;white-space:pre-line;font-weight:500}
+.unlock-close{background:linear-gradient(135deg,var(--blue-h),var(--indigo));border:none;border-radius:14px;padding:13px 34px;color:#fff;font-family:var(--fd);font-size:15px;font-weight:800;cursor:pointer}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:calc(var(--sb)+24px);left:50%;transform:translateX(-50%) translateY(12px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;transition:all .22s;pointer-events:none;z-index:400;white-space:nowrap;box-shadow:var(--shadow-lg)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ─── COSMIC DETAILS ─── */
+.star-field{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.star-dot{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s)}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.7;transform:scale(1.3)}}
+.cosmos-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;color:var(--blue);
+  background:var(--blue-t);border-radius:999px;padding:3px 9px;
+  letter-spacing:.3px;
+}
+.pcard-unrated-dot{width:7px;height:7px;border-radius:50%;background:var(--tomato);flex-shrink:0;margin-top:1px}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBszt_xh1YkE2fZrQL8-UJulRklM_mpVCw&libraries=places&callback=initGooglePlaces" async defer></script>
+</head>
+<body style="font-size: 8px">
+<div id="app">
+
+  <div class="hdr">
+    <div class="brand">
+      <div class="brand-mark" id="brandMark">🍕</div>
+      <div class="logo">Bocco<em>nauta</em></div>
+    </div>
+    <div class="hdr-meta" id="hdrMeta"></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('posti',this)" id="tabPosti">🍽 I miei posti</button>
+    <button class="tab" onclick="switchTab('badge',this)" id="badgeTab">🏅 Badge <span class="tab-badge" id="newBadgeCount" style="display:none">0</span></button>
+  </div>
+
+  <!-- VIEW: POSTI -->
+  <div class="view on" id="view-posti" data-screen-label="Lista posti">
+    <div class="stasera-wrap">
+      <button class="stasera-btn" onclick="openStasera()" id="staseraBtn">
+        <span class="stasera-left">🍽 Dove vado stasera?</span>
+        <span class="stasera-right"><span class="stasera-pill" id="topBadge">0 top</span> →</span>
+      </button>
+    </div>
+    <div class="search-wrap" id="sw">
+      <span class="s-ico" id="sIco">🔍</span>
+      <input class="search-box" id="sb" type="text" placeholder="Aggiungi un locale…"
+        autocomplete="off" autocorrect="off" spellcheck="false"
+        oninput="onSearch(this.value)" onblur="setTimeout(hideAC,200)">
+      <div class="ac" id="ac"></div>
+    </div>
+    <div class="filters" id="filters">
+      <div class="chip on" data-f="tutti" onclick="setFilter(this)">Tutti</div>
+      <div class="chip" data-f="ristorante" onclick="setFilter(this)">Ristoranti</div>
+      <div class="chip" data-f="pizzeria" onclick="setFilter(this)">Pizzerie</div>
+      <div class="chip" data-f="bar" onclick="setFilter(this)">Bar & Locali</div>
+      <div class="chip" data-f="top" onclick="setFilter(this)">🍕 Top</div>
+    </div>
+    <div class="scroll" id="list"></div>
+  </div>
+
+  <!-- VIEW: BADGE -->
+  <div class="view" id="view-badge" data-screen-label="Badge">
+    <div class="badge-scroll" id="badgeView"></div>
+  </div>
+
+</div>
+
+<!-- DETAIL SHEET -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheetOutside(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-scroll" id="sheetScroll"></div>
+  </div>
+</div>
+
+<!-- STASERA MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Dove vado stasera?</div>
+    <div class="modal-sub" id="modalSub"></div>
+    <div id="modalList"></div>
+  </div>
+</div>
+
+<!-- BADGE UNLOCK POPUP -->
+<div class="unlock-overlay" id="unlockOverlay" onclick="closeUnlock()">
+  <div class="unlock-box" id="unlockBox" onclick="event.stopPropagation()">
+    <div class="unlock-icon" id="unlockIcon"></div>
+    <div class="unlock-label">Badge sbloccato</div>
+    <div class="unlock-name" id="unlockName"></div>
+    <div class="unlock-desc" id="unlockDesc"></div>
+    <button class="unlock-close" onclick="closeUnlock()">Ottimo</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════
+   ICON SET — custom line icons, currentColor.
+   ════════════════════════════════════════════ */
+const ICONS = {
+  utensils:'<path d="M3 2v7c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V2"/><path d="M6 2v20"/><path d="M19 15V2a4 4 0 0 0-4 4v7c0 1.1.9 2 2 2h2Zm0 0v7"/>',
+  award:'<circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/>',
+  search:'<circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4-4"/>',
+  salad:'<path d="M7 21h10"/><path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"/><path d="M11.4 12a2.4 2.4 0 0 1-.4-4.77 2.4 2.4 0 0 1 3.2-2.77 2.4 2.4 0 0 1 3.47-.63 2.4 2.4 0 0 1 3.37 3.37 2.4 2.4 0 0 1-1.1 3.7"/><path d="m13 12 4-4"/>',
+  soup:'<path d="M12 21a8 8 0 0 0 8-8H4a8 8 0 0 0 8 8Z"/><path d="M7 21h10"/><path d="M16.2 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62"/><path d="M11.2 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62"/>',
+  cake:'<path d="M20 21v-7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2 1 2 1"/><path d="M2 21h20"/><path d="M12 4v4M8 5.5V8M16 5.5V8"/>',
+  wine:'<path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-1-8H8c-.5 4-1 6-1 8a5 5 0 0 0 5 5Z"/>',
+  instagram:'<rect width="19" height="19" x="2.5" y="2.5" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/>',
+  trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  crown:'<path d="M3 7l3.8 3.2L12 4l5.2 6.2L21 7l-1.4 11H4.4z"/><path d="M4.4 22h15.2"/>',
+  star:'<path d="M12 3l2.6 5.5 6 .7-4.4 4 1.2 5.9L12 16.9 6.6 19.1l1.2-5.9-4.4-4 6-.7z"/>',
+  target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".6"/>',
+  flame:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/>',
+  gem:'<path d="M6 3h12l4 6-10 12L2 9Z"/><path d="M11 3 8 9l4 12 4-12-3-6"/><path d="M2 9h20"/>',
+  sparkles:'<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M19 4v3M20.5 5.5h-3"/>',
+  trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.7V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.7V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+  pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  book:'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5z"/>',
+  map:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',
+};
+
+function IC(name, size, sw){
+  size = size||20; sw = sw||2;
+  return `<span class="ic"><svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg></span>`;
+}
+
+// Pizza emoji — the brand "godimento" mark. Full colour when on, greyed when off.
+function PIZZA(on, size){
+  size = size||18;
+  return `<span class="pz${on?' on':''}" style="font-size:${Math.round(size*0.92)}px;width:${size}px;height:${size}px">\u{1F355}</span>`;
+}
+// Brand mark on green badge.
+function PIZZA_WHITE(size){
+  size = size||20;
+  return `<span style="font-size:${Math.round(size*0.95)}px;line-height:1;display:inline-flex">\u{1F355}</span>`;
+}
+const TYPE_ICON  = {ristorante:'utensils', pizzeria:'soup', bar:'wine'};
+const TYPE_EMOJI = {ristorante:'🍽', pizzeria:'🍕', bar:'🍸'};
+const TYPE_COLOR = {ristorante:'var(--blue)', pizzeria:'var(--tomato)', bar:'var(--grape)'};
+const TYPE_TINT  = {ristorante:'var(--blue-t)', pizzeria:'var(--tomato-t)', bar:'var(--grape-t)'};
+
+const CAT_COLOR = {
+  'Esplorazione':'var(--blue)',
+  'Valutazioni':'var(--tomato)',
+  'Qualità':'var(--sun)',
+  'Tipologie':'var(--grape)',
+  'Dettaglio':'var(--sky)',
+};
+const CAT_TINT = {
+  'Esplorazione':'var(--blue-t)',
+  'Valutazioni':'var(--tomato-t)',
+  'Qualità':'var(--sun-t)',
+  'Tipologie':'var(--grape-t)',
+  'Dettaglio':'var(--sky-t)',
+};
+
+// ─── BADGE EMOJI ───
+const BADGE_EMOJI = {
+  exp1:'🔍', exp2:'🗺', exp3:'🍴', exp4:'👑',
+  rat1:'⭐', rat2:'🎯', rat3:'🔥', rat4:'🍕',
+  top1:'💎', top2:'🌟', top3:'🏆',
+  typ1:'🍕', typ2:'🍝', typ3:'🍸',
+  det1:'✍️', det2:'📖',
+};
+
+// ─── BADGE DEFINITIONS ───
+const BADGES = [
+  {id:'exp1',  cat:'Esplorazione', icon:'compass', name:'Curioso',          desc:'Hai aggiunto i primi 5 locali',        check:s=>s.total>=5,   prog:s=>[s.total,5]},
+  {id:'exp2',  cat:'Esplorazione', icon:'map',     name:'Esploratore',      desc:'15 locali in lista. Sei ovunque.',     check:s=>s.total>=15,  prog:s=>[s.total,15]},
+  {id:'exp3',  cat:'Esplorazione', icon:'utensils',name:'Mangione',         desc:'30 locali. Ormai è una missione.',     check:s=>s.total>=30,  prog:s=>[s.total,30]},
+  {id:'exp4',  cat:'Esplorazione', icon:'crown',   name:'Re della Forchetta',desc:'50 locali. Rispetto.',                check:s=>s.total>=50,  prog:s=>[s.total,50]},
+  {id:'rat1',  cat:'Valutazioni',  icon:'star',    name:'Critico Jr',       desc:'Hai valutato 5 locali',               check:s=>s.rated>=5,   prog:s=>[s.rated,5]},
+  {id:'rat2',  cat:'Valutazioni',  icon:'target',  name:'Intenditore',      desc:'15 valutazioni. Palato che cresce.',  check:s=>s.rated>=15,  prog:s=>[s.rated,15]},
+  {id:'rat3',  cat:'Valutazioni',  icon:'flame',   name:'Critico Spietato', desc:'30 valutazioni. Niente ti sfugge.',   check:s=>s.rated>=30,  prog:s=>[s.rated,30]},
+  {id:'rat4',  cat:'Valutazioni',  icon:'sparkles',name:'Dio del Godimento',desc:'50 valutazioni. Leggendario.',        check:s=>s.rated>=50,  prog:s=>[s.rated,50]},
+  {id:'top1',  cat:'Qualità',      icon:'gem',     name:'Buon Gusto',       desc:'5 locali con 4+ spicchi',             check:s=>s.top>=5,     prog:s=>[s.top,5]},
+  {id:'top2',  cat:'Qualità',      icon:'sparkles',name:'Palato Fino',      desc:'15 locali top. Sai scegliere bene.',  check:s=>s.top>=15,    prog:s=>[s.top,15]},
+  {id:'top3',  cat:'Qualità',      icon:'trophy',  name:'Gourmet',          desc:'25 locali top. Sei irraggiungibile.', check:s=>s.top>=25,    prog:s=>[s.top,25]},
+  {id:'typ1',  cat:'Tipologie',    icon:'soup',    name:'Pizzaiolo Onorario',desc:'5 pizzerie visitate',                check:s=>s.pizza>=5,   prog:s=>[s.pizza,5]},
+  {id:'typ2',  cat:'Tipologie',    icon:'utensils',name:'Trattoriano DOC',  desc:'5 ristoranti visitati',              check:s=>s.rist>=5,    prog:s=>[s.rist,5]},
+  {id:'typ3',  cat:'Tipologie',    icon:'wine',    name:'Habitué del Bar',  desc:'5 bar visitati',                     check:s=>s.bar>=5,     prog:s=>[s.bar,5]},
+  {id:'det1',  cat:'Dettaglio',    icon:'pen',     name:'Pignolo',          desc:'10 note scritte sulle sezioni cibo',  check:s=>s.notes>=10,  prog:s=>[s.notes,10]},
+  {id:'det2',  cat:'Dettaglio',    icon:'book',    name:'Cronista',         desc:'25 note scritte. Memorie preziose.',  check:s=>s.notes>=25,  prog:s=>[s.notes,25]},
+];
+
+// ─── DATA ───
+const DEMO = [
+  {id:1,name:"Trattoria da Nino",type:"ristorante",address:"Via Roma 12, Caserta",ig:"https://www.instagram.com/",
+   rating:5,date:"2025-03-15",note:"Uno dei posti migliori in zona.",
+   food:{antipasti:{r:4,n:"Mozzarella di bufala straordinaria"},primo:{r:5,n:"Ragù napoletano da sogno"},dolce:{r:3,n:"Tiramisù nella media"},bevande:{r:4,n:"Vino della casa ottimo"}},
+   atm:["romantico","rustico","tranquillo"]},
+  {id:2,name:"Pizzeria Starita",type:"pizzeria",address:"Via Toledo 27, Napoli",ig:"https://www.instagram.com/",
+   rating:4,date:"2025-04-02",note:"",
+   food:{antipasti:{r:5,n:"Frittatina di pasta incredibile"},primo:{r:4,n:"Pizza fritta top"},dolce:{r:0,n:""},bevande:{r:3,n:"Birra alla spina ok"}},
+   atm:["informale","vivace","economico"]},
+  {id:3,name:"Bar Centrale",type:"bar",address:"Piazza Vanvitelli, Caserta",ig:"",
+   rating:3,date:"2025-05-10",note:"",
+   food:{antipasti:{r:0,n:""},primo:{r:0,n:""},dolce:{r:3,n:"Cornetto buono"},bevande:{r:3,n:"Caffè nella media"}},
+   atm:["veloce","informale"]},
+  {id:4,name:"L'Osteria del Porto",type:"ristorante",address:"Lungomolo 8, Caserta",ig:"",
+   rating:0,date:"2025-06-01",note:"",
+   food:{antipasti:{r:0,n:""},primo:{r:0,n:""},dolce:{r:0,n:""},bevande:{r:0,n:""}},
+   atm:[]},
+];
+
+const GKEY = 'AIzaSyBszt_xh1YkE2fZrQL8-UJulRklM_mpVCw';
+
+function detectType(types){
+  if(!types||!types.length) return 'ristorante';
+  if(types.some(t=>['bar','cafe','night_club','bakery','coffee_shop'].includes(t))) return 'bar';
+  if(types.some(t=>t.includes('pizza'))) return 'pizzeria';
+  return 'ristorante';
+}
+
+const ATM_TAGS = ["romantico","rustico","informale","vivace","tranquillo","panoramico","economico","raffinato","veloce","con vista","rumoroso","intimo"];
+const FOOD_SECTIONS = [
+  {key:"antipasti",label:"Antipasti",icon:"salad",emoji:"🥗"},
+  {key:"primo",label:"Primo & Secondo",icon:"soup",emoji:"🍝"},
+  {key:"dolce",label:"Dolce",icon:"cake",emoji:"🍮"},
+  {key:"bevande",label:"Bevande",icon:"wine",emoji:"🥤"},
+];
+const GODIMENTO_TXT = ["—","Meh","Nella media","Buono","Molto buono","Godimento totale"];
+
+let places = JSON.parse(localStorage.getItem('sl4')||'null') || JSON.parse(JSON.stringify(DEMO));
+let unlockedBadges = JSON.parse(localStorage.getItem('sl4_badges')||'{}');
+let activeFilter = 'tutti';
+let stTimer;
+let unlockQueue = [];
+
+function save(){
+  localStorage.setItem('sl4', JSON.stringify(places));
+  checkBadges();
+}
+
+// ─── STATIC CHROME ───
+function paintChrome(){
+  // brand mark
+  const bm = document.getElementById('brandMark');
+  if(bm) bm.innerHTML = PIZZA_WHITE(20);
+  // tabs — plain text, no SVG to avoid Safari render issues
+  const tp = document.getElementById('tabPosti');
+  if(tp) tp.textContent = '🍽 I miei posti';
+  const bt = document.getElementById('badgeTab');
+  if(bt) bt.innerHTML = '🏅 Badge <span class="tab-badge" id="newBadgeCount" style="display:none">0</span>';
+  // stasera button
+  const sb2 = document.getElementById('staseraBtn');
+  if(sb2) sb2.innerHTML = '<span class="stasera-left">🍽 Dove vado stasera?</span><span class="stasera-right"><span class="stasera-pill" id="topBadge">0 top</span> →</span>';
+  // search icon
+  const si = document.getElementById('sIco');
+  if(si) si.textContent = '🔍';
+  // filters
+  const fi = document.getElementById('filters');
+  if(fi) fi.innerHTML =
+    '<div class="chip on" data-f="tutti" onclick="setFilter(this)">Tutti</div>'+
+    '<div class="chip" data-f="ristorante" onclick="setFilter(this)">Ristoranti</div>'+
+    '<div class="chip" data-f="pizzeria" onclick="setFilter(this)">Pizzerie</div>'+
+    '<div class="chip" data-f="bar" onclick="setFilter(this)">Bar & Locali</div>'+
+    '<div class="chip" data-f="top" onclick="setFilter(this)">🍕 Top</div>';
+}
+
+// ─── STATS ───
+function computeStats(){
+  const notes = places.reduce((acc,p)=>{
+    return acc + Object.values(p.food||{}).filter(f=>f.n&&f.n.trim().length>0).length;
+  },0);
+  return {
+    total: places.length,
+    rated: places.filter(p=>p.rating>0).length,
+    top:   places.filter(p=>p.rating>=4).length,
+    pizza: places.filter(p=>p.type==='pizzeria').length,
+    rist:  places.filter(p=>p.type==='ristorante').length,
+    bar:   places.filter(p=>p.type==='bar').length,
+    notes,
+  };
+}
+
+// ─── BADGE CHECK ───
+function checkBadges(){
+  const stats = computeStats();
+  const newlyUnlocked = [];
+  BADGES.forEach(b=>{
+    if(!unlockedBadges[b.id] && b.check(stats)){
+      unlockedBadges[b.id] = new Date().toISOString().split('T')[0];
+      newlyUnlocked.push(b);
+    }
+  });
+  if(newlyUnlocked.length){
+    localStorage.setItem('sl4_badges', JSON.stringify(unlockedBadges));
+    unlockQueue.push(...newlyUnlocked);
+    showNextUnlock();
+    updateNewBadgeCount();
+  }
+}
+
+function tintBox(b){
+  const box = document.getElementById('unlockBox');
+  box.style.setProperty('--cat', CAT_COLOR[b.cat]||'var(--green)');
+  box.style.setProperty('--cat-t', CAT_TINT[b.cat]||'var(--green-t)');
+}
+
+let unlockShowing = false;
+function showNextUnlock(){
+  if(unlockShowing || !unlockQueue.length) return;
+  const b = unlockQueue.shift();
+  unlockShowing = true;
+  tintBox(b);
+  document.getElementById('unlockIcon').textContent = BADGE_EMOJI[b.id] || b.icon;
+  document.getElementById('unlockName').textContent = b.name;
+  document.getElementById('unlockDesc').textContent = b.desc;
+  document.getElementById('unlockOverlay').classList.add('show');
+}
+function closeUnlock(){
+  document.getElementById('unlockOverlay').classList.remove('show');
+  setTimeout(()=>{ unlockShowing=false; showNextUnlock(); }, 300);
+}
+
+function updateNewBadgeCount(){
+  const newCount = BADGES.filter(b=>unlockedBadges[b.id]).length;
+  const seen = parseInt(sessionStorage.getItem('sl4_seen_badges')||'0');
+  const diff = newCount - seen;
+  const el = document.getElementById('newBadgeCount');
+  if(!el) return;
+  if(diff>0){ el.style.display=''; el.textContent=diff; }
+  else el.style.display='none';
+}
+
+// ─── TABS ───
+function switchTab(name, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('view-'+name).classList.add('on');
+  if(name==='badge'){
+    renderBadges();
+    const count = BADGES.filter(b=>unlockedBadges[b.id]).length;
+    sessionStorage.setItem('sl4_seen_badges', count);
+    const nb = document.getElementById('newBadgeCount');
+    if(nb) nb.style.display='none';
+  }
+}
+
+// ─── RENDER BADGES ───
+function ringArc(pct, unlocked, color){
+  const r = 27, cx = 33, cy = 33;
+  const circ = 2 * Math.PI * r;
+  const trackColor = 'var(--line)';
+  const fillColor = unlocked ? color : 'var(--line2)';
+  const dash = (pct / 100) * circ;
+  const gap = circ - dash;
+  return `<svg class="ring" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${trackColor}" stroke-width="4.5"/>
+    ${pct>0?`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${fillColor}" stroke-width="4.5"
+      stroke-dasharray="${dash} ${gap}" stroke-linecap="round"/>`:''}
+  </svg>`;
+}
+
+function renderBadges(){
+  const stats = computeStats();
+  const unlockedCount = BADGES.filter(b=>unlockedBadges[b.id]).length;
+  const cats = [...new Set(BADGES.map(b=>b.cat))];
+  const today = new Date().toISOString().split('T')[0];
+
+  let html = `<div class="badge-stats">
+    <div class="bstat"><div class="bstat-num">${stats.total}</div><div class="bstat-lbl">Locali</div></div>
+    <div class="bstat"><div class="bstat-num">${stats.rated}</div><div class="bstat-lbl">Valutati</div></div>
+    <div class="bstat"><div class="bstat-num">${unlockedCount}/${BADGES.length}</div><div class="bstat-lbl">Badge</div></div>
+  </div>`;
+
+  cats.forEach(cat=>{
+    const col = CAT_COLOR[cat]||'var(--green)';
+    const catBadges = BADGES.filter(b=>b.cat===cat);
+    html += `<div class="badge-cat-title" style="--cat:${col}">${cat}</div><div class="badge-ring-grid">`;
+    catBadges.forEach(b=>{
+      const unlocked = !!unlockedBadges[b.id];
+      const [cur,max] = b.prog(stats);
+      const pct = unlocked ? 100 : Math.min(96, Math.round(cur/max*100));
+      const isNew = unlocked && unlockedBadges[b.id] === today;
+      html += `<div class="badge-ring-item ${unlocked?'':'locked'}" style="--cat:${col}" onclick="showBadgeDetail('${b.id}')">
+        <div class="ring-wrap">
+          ${ringArc(pct, unlocked, col)}
+          <div class="ring-icon">${BADGE_EMOJI[b.id]||'🏅'}</div>
+          ${isNew?'<div class="ring-new"></div>':''}
+        </div>
+        <div class="ring-name">${b.name}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  document.getElementById('badgeView').innerHTML = html;
+}
+
+function showBadgeDetail(id){
+  const b = BADGES.find(x=>x.id===id); if(!b) return;
+  const stats = computeStats();
+  const unlocked = !!unlockedBadges[b.id];
+  const [cur,max] = b.prog(stats);
+  tintBox(b);
+  document.getElementById('unlockIcon').textContent = BADGE_EMOJI[b.id] || b.icon;
+  document.getElementById('unlockName').textContent = b.name;
+  document.getElementById('unlockDesc').textContent = unlocked
+    ? b.desc + '\n\nSbloccato il ' + fmtDate(unlockedBadges[b.id])
+    : b.desc + '\n\nProgresso: ' + cur + ' / ' + max;
+  document.getElementById('unlockOverlay').classList.add('show');
+  unlockShowing = true;
+}
+
+// ─── RENDER LIST ───
+function render(){
+  const list = document.getElementById('list');
+  let data = [...places].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(activeFilter==='top') data=data.filter(p=>p.rating>=4);
+  else if(activeFilter!=='tutti') data=data.filter(p=>p.type===activeFilter);
+
+  const stats = computeStats();
+  document.getElementById('hdrMeta').innerHTML = stats.total + ' posti';
+  const tb = document.getElementById('topBadge');
+  if(tb) tb.textContent = stats.top + ' top';
+  updateNewBadgeCount();
+
+  if(!data.length){
+    list.innerHTML=`<div class="empty"><div class="empty-icon">${activeFilter==='top'?'⭐':'🍽'}</div><div class="empty-title">${activeFilter==='top'?'Nessun top ancora':'Nessun posto qui'}</div><p>${activeFilter==='top'?'Dai 4+ spicchi a un posto.':'Cerca un locale qui sopra.'}</p></div>`;
+    return;
+  }
+  list.innerHTML = data.map(p=>`
+    <div class="pcard ${p.rating===0?'unrated':''}" onclick="openDetail(${p.id})">
+      <div class="pc-type" style="background:${TYPE_TINT[p.type]||'var(--blue-t)'};color:${TYPE_COLOR[p.type]||'var(--blue)'}">${TYPE_EMOJI[p.type]||'🍽'}</div>
+      <div class="pc-left">
+        <div class="pc-name">${esc(p.name)}</div>
+        <div class="pc-sub">${cap(p.type)} · ${fmtDate(p.date)}</div>
+      </div>
+      <div class="pc-right">
+        <div class="pc-pizze">${pizzaRow(p.rating,15)}</div>
+        ${p.rating===0?'<div class="badge-new">da valutare</div>':''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function pizzaRow(rating,size){
+  return [1,2,3,4,5].map(i=>PIZZA(rating>=i,size)).join('');
+}
+
+// ─── DETAIL SHEET ───
+function openDetail(id){
+  const p = places.find(x=>x.id===id); if(!p) return;
+  const ss = document.getElementById('sheetScroll');
+  ss.innerHTML = buildSheetHTML(p);
+  document.getElementById('sheetOverlay').classList.add('open');
+}
+
+function buildSheetHTML(p){
+  const foodRows = FOOD_SECTIONS.map(s=>{
+    const fd = p.food[s.key]||{r:0,n:''};
+    return `<div class="food-row" id="frow-${s.key}">
+      <div class="fr-top">
+        <div class="fr-label"><span class="fr-icon">${s.emoji}</span>${s.label}</div>
+        <div class="fr-pizze">${[1,2,3,4,5].map(i=>`<span class="fr-pizza" onclick="rateFood(${p.id},'${s.key}',${i})">${PIZZA(fd.r>=i,19)}</span>`).join('')}</div>
+      </div>
+      <textarea class="fr-note" rows="2" placeholder="Cosa hai mangiato? Cosa ti è piaciuto…" onchange="saveFood(${p.id},'${s.key}',this.value)">${esc(fd.n)}</textarea>
+    </div>`;
+  }).join('');
+
+  const tags = ATM_TAGS.map(t=>`<div class="atm-tag${(p.atm||[]).includes(t)?' on':''}" onclick="toggleAtm(${p.id},'${t}',this)">${t}</div>`).join('');
+
+  return `
+    <div class="sh-hdr">
+      <div class="sh-hdr-left">
+        <div class="sh-type-ico" style="background:${TYPE_TINT[p.type]||'var(--blue-t)'};color:${TYPE_COLOR[p.type]||'var(--blue)'}">${TYPE_EMOJI[p.type]||'🍽'}</div>
+        <div><div class="sh-name">${esc(p.name)}</div><div class="sh-type">${cap(p.type)} · ${esc(p.address)}</div></div>
+      </div>
+      <button class="sh-close" onclick="closeSheet()">✕</button>
+    </div>
+    <div class="global-rating">
+      <div>
+        <div class="gr-label">Godimento</div>
+        <div class="gr-pizze">${[1,2,3,4,5].map(i=>`<span class="gr-pizza" onclick="rateGlobal(${p.id},${i})">${PIZZA(p.rating>=i,28)}</span>`).join('')}</div>
+      </div>
+      <div class="gr-right">
+        <div class="gr-txt" id="gr-txt-${p.id}">${p.rating>0?p.rating+'<small>/5</small>':''}</div>
+        <div class="gr-sub" id="gr-sub-${p.id}">${GODIMENTO_TXT[p.rating]}</div>
+      </div>
+    </div>
+    ${p.ig
+      ?`<div class="ig-strip"><button class="ig-btn" onclick="openIG('${p.ig}')">📸 Apri Instagram</button></div>`
+      :''
+    }
+    <div class="sec-title">Cosa hai mangiato</div>
+    <div class="food-card">${foodRows}</div>
+    <div class="sec-title">Atmosfera</div>
+    <div class="tags-wrap">${tags}</div>
+    <div class="sec-title">Note generali</div>
+    <textarea class="final-note" rows="3" placeholder="Impressioni generali, consigli per la prossima volta…" onchange="saveNote(${p.id},this.value)">${esc(p.note)}</textarea>
+    <button class="save-btn" onclick="saveAll(${p.id})">Salva</button>
+    <div style="padding:0 16px;margin-top:10px">
+      <button onclick="deletePlace(${p.id})" style="width:100%;background:none;border:1.5px solid var(--line);border-radius:14px;padding:13px;color:var(--faint);font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s" onmouseover="this.style.borderColor='var(--tomato)';this.style.color='var(--tomato)'" onmouseout="this.style.borderColor='var(--line)';this.style.color='var(--faint)'">🗑 Rimuovi locale</button>
+    </div>
+    <div style="height:20px"></div>`;
+}
+
+function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open'); }
+function closeSheetOutside(e){ if(e.target.id==='sheetOverlay') closeSheet(); }
+
+// ─── RATING ───
+function rateGlobal(id,stars){
+  const p=places.find(x=>x.id===id); if(!p) return;
+  p.rating=stars; save();
+  const gt=document.getElementById('gr-txt-'+id);
+  const gs=document.getElementById('gr-sub-'+id);
+  if(gt) gt.innerHTML=stars+'<small>/5</small>';
+  if(gs) gs.textContent=GODIMENTO_TXT[stars];
+  document.querySelectorAll('.gr-pizza .pz').forEach((el,i)=>el.classList.toggle('on',i<stars));
+  render(); toast('Godimento salvato: '+GODIMENTO_TXT[stars]);
+}
+function rateFood(id,key,stars){
+  const p=places.find(x=>x.id===id); if(!p) return;
+  if(!p.food[key]) p.food[key]={r:0,n:''};
+  p.food[key].r=stars; save();
+  const row=document.getElementById('frow-'+key);
+  if(row) row.querySelectorAll('.fr-pizza .pz').forEach((el,i)=>el.classList.toggle('on',i<stars));
+  toast('Salvato');
+}
+function saveFood(id,key,val){
+  const p=places.find(x=>x.id===id); if(!p) return;
+  if(!p.food[key]) p.food[key]={r:0,n:''};
+  p.food[key].n=val.trim(); save();
+}
+function saveNote(id,val){
+  const p=places.find(x=>x.id===id); if(!p) return;
+  p.note=val.trim(); save();
+}
+function toggleAtm(id,tag,el){
+  const p=places.find(x=>x.id===id); if(!p) return;
+  if(!p.atm) p.atm=[];
+  const idx=p.atm.indexOf(tag);
+  if(idx>-1){p.atm.splice(idx,1);el.classList.remove('on');}
+  else{p.atm.push(tag);el.classList.add('on');}
+  save();
+}
+function saveAll(id){ save(); closeSheet(); render(); toast('Salvato'); }
+function deletePlace(id){
+  if(!confirm('Rimuovere questo posto?')) return;
+  places=places.filter(x=>x.id!==id);
+  save(); closeSheet(); render(); toast('Rimosso');
+}
+
+// ─── SEARCH (Google Places JS SDK) ───
+let autocompleteService = null;
+let placesService = null;
+let sdkReady = false;
+
+function initGooglePlaces(){
+  autocompleteService = new google.maps.places.AutocompleteService();
+  // PlacesService needs a map div (hidden)
+  const dummy = document.createElement('div');
+  placesService = new google.maps.places.PlacesService(dummy);
+  sdkReady = true;
+}
+
+function onSearch(val){
+  clearTimeout(stTimer);
+  const ac=document.getElementById('ac');
+  if(val.length<2){ac.style.display='none';return;}
+  if(!sdkReady){toast('Ricerca non ancora pronta, riprova.');return;}
+  stTimer=setTimeout(()=>{
+    autocompleteService.getPlacePredictions({
+      input: val,
+      types: ['establishment'],
+      componentRestrictions: {country:'it'},
+      location: new google.maps.LatLng(41.07, 14.33),
+      radius: 50000,
+    }, (predictions, status)=>{
+      if(status !== google.maps.places.PlacesServiceStatus.OK || !predictions){
+        ac.style.display='none'; return;
+      }
+      const res = predictions.slice(0,6);
+      ac._r = res; ac.style.display='block';
+      ac.innerHTML = res.map((p,i)=>{
+        const main = p.structured_formatting?.main_text||p.description||'';
+        const sec  = p.structured_formatting?.secondary_text||'';
+        return `<div class="ac-row" onmousedown="addPlaceFromPrediction(${i})" ontouchstart="addPlaceFromPrediction(${i})">
+          <div class="ac-ico" style="background:${TYPE_TINT[p.type]||'var(--blue-t)'};color:${TYPE_COLOR[p.type]||'var(--blue)'}">${TYPE_EMOJI[p.type]||'🍽'}</div>
+          <div><div class="ac-name">${esc(main)}</div><div class="ac-addr">${esc(sec)}</div></div>
+        </div>`;
+      }).join('');
+    });
+  },300);
+}
+
+function addPlaceFromPrediction(i){
+  const ac=document.getElementById('ac');
+  const pred=ac._r&&ac._r[i]; if(!pred) return;
+  const main=pred.structured_formatting?.main_text||pred.description||'';
+  const sec=pred.structured_formatting?.secondary_text||'';
+  if(places.find(x=>x.name===main)){toast('Già in lista!');return;}
+  // Fetch details for types
+  placesService.getDetails({placeId:pred.place_id, fields:['types','formatted_address']}, (place, status)=>{
+    const types = place?.types||[];
+    const type = detectType(types);
+    const address = place?.formatted_address||sec;
+    places.unshift({id:Date.now(),name:main,type,address,ig:'',rating:0,date:new Date().toISOString().split('T')[0],note:'',food:{antipasti:{r:0,n:''},primo:{r:0,n:''},dolce:{r:0,n:''},bevande:{r:0,n:''}},atm:[]});
+    save();
+    document.getElementById('sb').value=''; hideAC();
+    activeFilter='tutti';
+    document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.f==='tutti'));
+    render(); toast('Aggiunto! Toccalo per valutarlo dopo cena.');
+  });
+}
+
+function addPlace(i){ addPlaceFromPrediction(i); }
+function hideAC(){ document.getElementById('ac').style.display='none'; }
+
+// ─── STASERA ───
+function openStasera(){
+  const top=places.filter(p=>p.rating>=4).sort((a,b)=>b.rating-a.rating);
+  document.getElementById('modalSub').textContent=top.length?top.length+' posto'+(top.length>1?'i':'')+' con 4+ spicchi':'';
+  const ml=document.getElementById('modalList');
+  ml.innerHTML=!top.length
+    ?`<div class="no-top">⭐<br>Valuta i tuoi posti dopo la cena<br>e troverai qui i migliori.</div>`
+    :top.map(p=>`<div class="tn-card"><div><div class="tn-name">${esc(p.name)}</div><div class="tn-pizze">${pizzaRow(p.rating,15)}</div><div class="tn-type">${cap(p.type)} · ${(p.atm||[]).slice(0,2).join(', ')}</div></div><button class="tn-go" onclick="closeModal();openDetail(${p.id})">Dettagli</button></div>`).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModalOutside(e){ if(e.target.id==='modalOverlay') closeModal(); }
+
+// ─── FILTER ───
+function setFilter(el){
+  activeFilter=el.dataset.f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===el));
+  render();
+}
+function openIG(url){ window.open(url,'_blank'); }
+
+// ─── TOAST ───
+let tTimer;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(tTimer); tTimer=setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+// ─── UTILS ───
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function cap(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):s; }
+function fmtDate(d){ if(!d)return ''; const[y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
+
+// ─── INIT ───
+checkBadges();
+render();
+</script>
+</body>
+</html>
