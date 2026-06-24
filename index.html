@@ -321,6 +321,13 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 }
 .pcard-unrated-dot{width:7px;height:7px;border-radius:50%;background:var(--tomato);flex-shrink:0;margin-top:1px}
 </style>
+<script>
+// Chiamata da Google Maps se la chiave API è bloccata o non valida
+function gm_authFailure(){
+  window._gmAuthFailed = true;
+  console.error('[Bocconauta] Google Maps API auth failure — chiave bloccata o dominio non autorizzato');
+}
+</script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsaH8uMWb55Ew0L9sk176vj20RP5jM2Oo&libraries=places&callback=initGooglePlaces" async defer></script>
 </head>
 <body style="font-size: 8px">
@@ -898,17 +905,19 @@ function onSearch(val){
   clearTimeout(stTimer);
   const ac=document.getElementById('ac');
   if(val.length<2){ac.style.display='none';return;}
-  if(!sdkReady){toast('Ricerca non ancora pronta, riprova.');return;}
+  if(window._gmAuthFailed){toast('⚠️ Chiave API Google non autorizzata per questo dominio.');return;}
+  if(!sdkReady){toast('Caricamento ricerca in corso, riprova tra un secondo.');return;}
   stTimer=setTimeout(()=>{
     autocompleteService.getPlacePredictions({
       input: val,
       types: ['establishment'],
       componentRestrictions: {country:'it'},
-      location: new google.maps.LatLng(41.07, 14.33),
-      radius: 50000,
+      locationBias: {center:{lat:41.07,lng:14.33},radius:50000},
     }, (predictions, status)=>{
       if(status !== google.maps.places.PlacesServiceStatus.OK || !predictions){
-        ac.style.display='none'; return;
+        ac.style.display='none';
+        if(status==='REQUEST_DENIED') toast('⚠️ Chiave API bloccata — controlla le restrizioni dominio.');
+        return;
       }
       const res = predictions.slice(0,6);
       ac._r = res; ac.style.display='block';
