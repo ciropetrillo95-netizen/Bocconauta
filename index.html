@@ -65,7 +65,10 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 .pz.on{filter:none}
 
 /* ─── APP SHELL ─── */
-#app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:var(--bg-grad)}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:var(--bg-grad);position:relative;overflow:hidden}
+.doodle-layer{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.doodle-layer svg{position:absolute;opacity:.045}
+#app > *:not(.doodle-layer){position:relative;z-index:1}
 
 /* ─── HEADER ─── */
 .hdr{
@@ -323,6 +326,44 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 <body style="font-size: 8px">
 <div id="app">
 
+  <!-- DOODLE BACKGROUND -->
+  <div class="doodle-layer">
+    <!-- pizza slice top-right -->
+    <svg width="110" height="110" style="top:-18px;right:-10px;transform:rotate(18deg)" viewBox="0 0 64 64" fill="none" stroke="#1B2FE8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M32 4 L60 56 L4 56 Z"/>
+      <path d="M20 40 Q32 34 44 40"/>
+      <circle cx="26" cy="46" r="2.5" fill="#1B2FE8"/>
+      <circle cx="38" cy="44" r="2" fill="#1B2FE8"/>
+      <circle cx="32" cy="50" r="1.8" fill="#1B2FE8"/>
+    </svg>
+    <!-- fork & knife left -->
+    <svg width="48" height="90" style="top:22%;left:-8px;transform:rotate(-12deg)" viewBox="0 0 24 48" fill="none" stroke="#6C47FF" stroke-width="2" stroke-linecap="round">
+      <line x1="6" y1="2" x2="6" y2="20"/><path d="M3 2v8a3 3 0 0 0 6 0V2"/><line x1="6" y1="20" x2="6" y2="46"/>
+      <line x1="16" y1="2" x2="16" y2="46"/><path d="M13 2v12a3 3 0 0 0 6 0V2"/>
+    </svg>
+    <!-- star/sparkle mid-right -->
+    <svg width="36" height="36" style="top:38%;right:8px;transform:rotate(10deg)" viewBox="0 0 24 24" fill="none" stroke="#F0532B" stroke-width="2" stroke-linecap="round">
+      <path d="M12 2l1.6 4.8a2 2 0 0 0 1.3 1.3L20 9.6l-4.8 1.6a2 2 0 0 0-1.3 1.3L12 17.2l-1.6-4.8a2 2 0 0 0-1.3-1.3L4.4 9.6l4.8-1.6a2 2 0 0 0 1.3-1.3Z"/>
+    </svg>
+    <!-- wine glass bottom-left -->
+    <svg width="52" height="72" style="bottom:18%;left:2px;transform:rotate(8deg)" viewBox="0 0 24 32" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round">
+      <path d="M5 2h14l-3 10a5 5 0 0 1-8 0Z"/><line x1="12" y1="18" x2="12" y2="28"/><line x1="7" y1="28" x2="17" y2="28"/>
+    </svg>
+    <!-- small pizza bottom-right -->
+    <svg width="70" height="70" style="bottom:-14px;right:-8px;transform:rotate(-22deg)" viewBox="0 0 64 64" fill="none" stroke="#FFB800" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M32 6 L56 52 L8 52 Z"/>
+      <circle cx="30" cy="42" r="2" fill="#FFB800"/>
+      <circle cx="40" cy="40" r="1.6" fill="#FFB800"/>
+    </svg>
+    <!-- dots pattern -->
+    <svg width="60" height="120" style="top:52%;right:14px" viewBox="0 0 30 60" fill="#1B2FE8">
+      <circle cx="5" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="25" cy="5" r="2"/>
+      <circle cx="5" cy="20" r="2"/><circle cx="15" cy="20" r="2"/><circle cx="25" cy="20" r="2"/>
+      <circle cx="5" cy="35" r="2"/><circle cx="15" cy="35" r="2"/><circle cx="25" cy="35" r="2"/>
+      <circle cx="5" cy="50" r="2"/><circle cx="15" cy="50" r="2"/><circle cx="25" cy="50" r="2"/>
+    </svg>
+  </div>
+
   <div class="hdr">
     <div class="brand">
       <div class="brand-mark" id="brandMark">🍕</div>
@@ -442,7 +483,7 @@ function PIZZA(on, size){
 // Brand mark on green badge.
 function PIZZA_WHITE(size){
   size = size||20;
-  return `<span style="font-size:${Math.round(size*0.95)}px;line-height:1;display:inline-flex">\u{1F355}</span>`;
+  return `<span style="font-size:${Math.round(size*0.95)}px;line-height:1;display:inline-flex;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))">\u{1F355}</span>`;
 }
 const TYPE_ICON  = {ristorante:'utensils', pizzeria:'soup', bar:'wine'};
 const TYPE_EMOJI = {ristorante:'🍽', pizzeria:'🍕', bar:'🍸'};
@@ -546,7 +587,7 @@ function save(){
 function paintChrome(){
   // brand mark
   const bm = document.getElementById('brandMark');
-  if(bm) bm.innerHTML = PIZZA_WHITE(20);
+  if(bm) bm.innerHTML = PIZZA_WHITE(26);
   // tabs — plain text, no SVG to avoid Safari render issues
   const tp = document.getElementById('tabPosti');
   if(tp) tp.textContent = '🍽 I miei posti';
