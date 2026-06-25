@@ -249,6 +249,16 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 .ig-row input{flex:1;border:none;outline:none;background:none;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--ink);min-width:0}
 .ig-row input::placeholder{color:var(--faint)}
 .ig-row-btn{flex-shrink:0;background:var(--blue-t);color:var(--blue);border:none;border-radius:9px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.ig-preview{margin:8px 16px 0;border-radius:16px;overflow:hidden;display:none}
+.ig-preview.show{display:block}
+.ig-preview-inner{background:linear-gradient(135deg,#F9CE34,#EE2A7B,#6228D7);padding:2px;border-radius:16px}
+.ig-preview-body{background:var(--card);border-radius:14px;padding:14px 15px;display:flex;align-items:center;gap:13px;cursor:pointer}
+.ig-preview-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#F9CE34,#EE2A7B,#6228D7);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ig-preview-avatar svg{width:24px;height:24px;fill:#fff}
+.ig-preview-info{flex:1;min-width:0}
+.ig-preview-handle{font-family:var(--fd);font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ig-preview-sub{font-size:11.5px;color:var(--muted);margin-top:3px;font-weight:500}
+.ig-preview-arrow{color:var(--faint);flex-shrink:0}
 .del-btn{background:var(--tomato-t);color:var(--tomato);border:none;border-radius:14px;padding:13px 14px;cursor:pointer;font-family:var(--fb);display:flex;align-items:center;justify-content:center;gap:8px;font-size:13.5px;font-weight:700}
 .sec-title{font-family:var(--fd);font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.2px;padding:24px 18px 11px}
 .food-card{background:var(--card);border-radius:18px;margin:0 16px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-sm)}
@@ -968,8 +978,19 @@ function buildSheetHTML(p){
     </div>
     <div class="ig-row">
       <span class="ig-row-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span>
-      <input id="ig-input-${p.id}" placeholder="Link o @profilo Instagram…" value="${esc(p.ig||'')}" onblur="saveIG(${p.id},this.value)" onkeydown="if(event.key==='Enter'){this.blur()}">
-      ${p.ig?`<button class="ig-row-btn" id="ig-open-${p.id}" onclick="openIG('${esc(p.ig)}')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>Apri</button>`:`<button class="ig-row-btn" id="ig-open-${p.id}" style="display:none" onclick="openIG(document.getElementById('ig-input-${p.id}').value)"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>Apri</button>`}
+      <input id="ig-input-${p.id}" placeholder="@profilo o link…" value="${esc(p.ig||'')}" onblur="saveIG(${p.id},this.value)" onkeydown="if(event.key==='Enter'){this.blur()}">
+    </div>
+    <div class="ig-preview${p.ig?' show':''}" id="ig-preview-${p.id}" onclick="openIG('${esc(p.ig||'')}')">
+      <div class="ig-preview-inner">
+        <div class="ig-preview-body">
+          <div class="ig-preview-avatar"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></div>
+          <div class="ig-preview-info">
+            <div class="ig-preview-handle" id="ig-preview-handle-${p.id}">${esc(igHandle(p.ig||''))}</div>
+            <div class="ig-preview-sub">Tocca per aprire il profilo</div>
+          </div>
+          <div class="ig-preview-arrow"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+      </div>
     </div>
     <div class="sec-title">Cosa hai mangiato</div>
     <div class="food-card">${foodRows}</div>
@@ -1213,13 +1234,22 @@ function renderMap(){
   }
 }
 
+function igHandle(val){
+  if(!val) return '';
+  if(val.startsWith('http')){
+    try{ const u=new URL(val); return '@'+u.pathname.replace(/\//g,'').split('?')[0]; }catch(e){}
+  }
+  return val.startsWith('@') ? val : '@'+val;
+}
 function saveIG(id, val){
   const p=places.find(x=>x.id===id); if(!p) return;
   val=val.trim();
   if(val && !val.startsWith('http') && !val.startsWith('@')) val='@'+val;
   p.ig=val; save();
-  const btn=document.getElementById('ig-open-'+id);
-  if(btn) btn.style.display=val?'':'none';
+  const preview=document.getElementById('ig-preview-'+id);
+  const handleEl=document.getElementById('ig-preview-handle-'+id);
+  if(preview){ preview.classList.toggle('show', !!val); preview.onclick=()=>openIG(val); }
+  if(handleEl) handleEl.textContent=igHandle(val);
 }
 function openIG(val){
   if(!val) return;
