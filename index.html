@@ -223,7 +223,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
   background:var(--bg);border-radius:26px 26px 0 0;
   width:100%;max-width:480px;height:93dvh;
   display:flex;flex-direction:column;
-  transform:translateY(100%);transition:transform .34s cubic-bezier(.32,.72,0,1);
+  transform:translateY(100%);transition:transform .42s cubic-bezier(0.34,1.28,0.64,1);
 }
 .sheet-overlay.open .sheet{transform:translateY(0)}
 .sheet-handle{width:42px;height:5px;background:var(--line2);border-radius:3px;margin:11px auto 0;flex-shrink:0}
@@ -284,7 +284,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 /* ─── MODAL STASERA ─── */
 .modal-overlay{position:fixed;inset:0;background:rgba(10,12,40,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--bg);border-radius:26px 26px 0 0;width:100%;max-width:480px;padding:8px 0 calc(var(--sb)+24px);max-height:76dvh;overflow-y:auto;transform:translateY(100%);transition:transform .34s cubic-bezier(.32,.72,0,1)}
+.modal{background:var(--bg);border-radius:26px 26px 0 0;width:100%;max-width:480px;padding:8px 0 calc(var(--sb)+24px);max-height:76dvh;overflow-y:auto;transform:translateY(100%);transition:transform .42s cubic-bezier(0.34,1.28,0.64,1)}
 .modal-overlay.open .modal{transform:translateY(0)}
 .modal-handle{width:42px;height:5px;background:var(--line2);border-radius:3px;margin:11px auto 16px}
 .modal-title{font-family:var(--fd);font-size:20px;font-weight:800;padding:0 18px 4px;letter-spacing:-.5px}
@@ -381,6 +381,66 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 #map-canvas{position:absolute;inset:0}
 .map-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:12px;text-align:center;padding:28px}
 .map-empty-title{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--ink)}
+
+/* ─── DARK MODE ─── */
+body.dark{
+  --bg:#0D0E1C;
+  --bg-grad:radial-gradient(140% 90% at 50% -5%,#151830 0%,#0D0E1C 100%);
+  --card:#181A2E;
+  --card2:#20223A;
+  --line:#262944;
+  --line2:#353860;
+  --ink:#E6E8F5;
+  --muted:#7E85A8;
+  --faint:#4A506E;
+  --star-off:#2E3150;
+  --blue-t:#15183A;
+  --tomato-t:#26120E;
+  --shadow-sm:0 2px 10px -3px rgba(0,0,20,.6);
+  --shadow:0 10px 28px -10px rgba(0,0,20,.7);
+  --shadow-lg:0 22px 50px -16px rgba(0,0,20,.8);
+}
+.dark-toggle{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-sm);flex-shrink:0;transition:transform .15s;font-size:16px;line-height:1}
+.dark-toggle:active{transform:scale(.88)}
+
+/* ─── STATS VIEW ─── */
+.stats-scroll{flex:1;overflow-y:auto;padding:16px 16px calc(var(--sb)+18px);-webkit-overflow-scrolling:touch}
+.stats-scroll::-webkit-scrollbar{display:none}
+.stats-hero{background:linear-gradient(135deg,var(--blue-h),var(--indigo));border-radius:22px;padding:20px 22px;margin-bottom:14px;color:#fff;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--glow-blue)}
+.stats-hero-num{font-family:var(--fd);font-size:54px;font-weight:800;line-height:1;letter-spacing:-2.5px}
+.stats-hero-label{font-size:12px;font-weight:700;opacity:.75;margin-top:5px;letter-spacing:.3px;text-transform:uppercase}
+.stats-hero-right{text-align:right}
+.stats-hero-sub{font-family:var(--fd);font-size:17px;font-weight:800;opacity:.95;line-height:1.3}
+.stats-hero-sub2{font-size:12px;font-weight:600;opacity:.7;margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow-sm)}
+.stat-card-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:8px}
+.stat-card-val{font-family:var(--fd);font-size:27px;font-weight:800;color:var(--ink);letter-spacing:-1px;line-height:1}
+.stat-card-sub{font-size:11.5px;color:var(--muted);margin-top:5px;font-weight:500;line-height:1.4}
+.stat-section{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.stat-section-title{font-family:var(--fd);font-size:14px;font-weight:800;color:var(--ink);margin-bottom:14px;letter-spacing:-.2px}
+.stat-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.stat-bar-row:last-child{margin-bottom:0}
+.stat-bar-lbl{font-size:12.5px;font-weight:600;color:var(--muted);min-width:80px;flex-shrink:0}
+.stat-bar-track{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue-h),var(--indigo))}
+.stat-bar-num{font-size:12px;font-weight:700;color:var(--blue);min-width:26px;text-align:right;flex-shrink:0}
+.stat-tag{display:inline-flex;align-items:center;gap:6px;background:var(--blue-t);color:var(--blue);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700;margin:4px 4px 0 0}
+.stat-tag-count{background:var(--blue);color:#fff;border-radius:999px;padding:1px 7px;font-size:10px;font-weight:800}
+
+/* ─── MAP FILTER ─── */
+.map-filter-bar{position:absolute;top:12px;left:0;right:0;z-index:10;display:flex;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;pointer-events:all}
+.map-filter-bar::-webkit-scrollbar{display:none}
+.map-fchip{flex-shrink:0;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:8px 16px;font-size:13px;color:var(--muted);cursor:pointer;font-family:var(--fb);font-weight:700;box-shadow:var(--shadow-sm);white-space:nowrap;transition:all .15s}
+.map-fchip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ─── VISIT DELETE ─── */
+.visit-del-btn{background:none;border:none;color:var(--faint);cursor:pointer;padding:4px 6px;display:flex;align-items:center;border-radius:8px;transition:all .15s;font-size:13px;line-height:1}
+.visit-del-btn:active,.visit-del-btn:hover{color:var(--tomato)}
+
+/* ─── EMPTY STATES ─── */
+.empty-illo{margin-bottom:20px;display:flex;justify-content:center}
+.empty-illo svg{opacity:.18}
 </style>
 <script>
 // Chiamata da Google Maps se la chiave API è bloccata o non valida
@@ -424,13 +484,17 @@ function gm_authFailure(){
       </div>
       <div class="logo">Bocco<em>nauta</em></div>
     </div>
-    <div class="hdr-meta" id="hdrMeta"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="hdr-meta" id="hdrMeta"></div>
+      <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙</button>
+    </div>
   </div>
 
   <!-- TABS -->
   <div class="tabs">
     <button class="tab on" onclick="switchTab('posti',this)" id="tabPosti">🍽 Posti</button>
     <button class="tab" onclick="switchTab('mappa',this)" id="tabMappa">🗺 Mappa</button>
+    <button class="tab" onclick="switchTab('stats',this)" id="tabStats">📊 Stats</button>
     <button class="tab" onclick="switchTab('badge',this)" id="badgeTab">🏅 Badge <span class="tab-badge" id="newBadgeCount" style="display:none">0</span></button>
   </div>
 
@@ -480,7 +544,19 @@ function gm_authFailure(){
   <div class="view" id="view-mappa" data-screen-label="Mappa">
     <div class="map-view" id="mapView">
       <div id="map-canvas"></div>
+      <div class="map-filter-bar" id="mapFilterBar">
+        <div class="map-fchip on" data-mf="tutti" onclick="setMapFilter(this)">Tutti</div>
+        <div class="map-fchip" data-mf="ristorante" onclick="setMapFilter(this)">🍽 Ristoranti</div>
+        <div class="map-fchip" data-mf="pizzeria" onclick="setMapFilter(this)">🍕 Pizzerie</div>
+        <div class="map-fchip" data-mf="bar" onclick="setMapFilter(this)">🍸 Bar</div>
+        <div class="map-fchip" data-mf="top" onclick="setMapFilter(this)">⭐ Top</div>
+      </div>
     </div>
+  </div>
+
+  <!-- VIEW: STATS -->
+  <div class="view" id="view-stats" data-screen-label="Statistiche">
+    <div class="stats-scroll" id="statsView"></div>
   </div>
 
 </div>
@@ -802,6 +878,8 @@ function switchTab(name, el){
     if(nb) nb.style.display='none';
   } else if(name==='mappa'){
     renderMap();
+  } else if(name==='stats'){
+    renderStats();
   }
 }
 
@@ -894,7 +972,15 @@ function render(){
   updateNewBadgeCount();
 
   if(!data.length){
-    list.innerHTML=`<div class="empty"><div class="empty-icon">${activeFilter==='top'?'⭐':'🍽'}</div><div class="empty-title">${activeFilter==='top'?'Nessun top ancora':'Nessun posto qui'}</div><p>${activeFilter==='top'?'Dai 4+ spicchi a un posto.':'Cerca un locale qui sopra.'}</p></div>`;
+    const isTop = activeFilter==='top';
+    const isSearch = !!searchQuery;
+    const illoTop = `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 12l5.2 15.8h16.6l-13.4 9.8 5.1 15.8L40 44.4l-13.5 9 5.1-15.8L18.2 27.8H34.8z"/></svg>`;
+    const illoFork = `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="28"/><path d="M30 30v8a5 5 0 0 0 10 0v-8M35 38v14M50 30v22M50 30a5 5 0 0 1 0 10"/></svg>`;
+    const illoSearch = `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="36" cy="36" r="18"/><path d="M49 49l14 14"/><path d="M29 36h14M36 29v14"/></svg>`;
+    const illo = isTop ? illoTop : isSearch ? illoSearch : illoFork;
+    const title = isTop ? 'Nessun top ancora' : isSearch ? 'Nessun risultato' : 'Nessun posto qui';
+    const sub = isTop ? 'Dai 4+ stelle a un posto dopo una cena.' : isSearch ? `Nessun posto corrisponde a "${searchQuery}".` : 'Cerca un locale con la barra qui sopra.';
+    list.innerHTML=`<div class="empty"><div class="empty-illo">${illo}</div><div class="empty-title">${title}</div><p>${sub}</p></div>`;
     return;
   }
   list.innerHTML = data.map(p=>`
@@ -936,12 +1022,18 @@ function buildSheetHTML(p){
   const tags = ATM_TAGS.map(t=>`<div class="atm-tag${(p.atm||[]).includes(t)?' on':''}" onclick="toggleAtm(${p.id},'${t}',this)">${t}</div>`).join('');
 
   const visits = p.visits||[];
-  const visitsHTML = visits.length ? visits.slice().reverse().map(v=>{
+  const visitsHTML = visits.length ? visits.slice().reverse().map((v,ri)=>{
+    const realIdx = visits.length - 1 - ri;
     const foodSections = FOOD_SECTIONS.filter(s=>v.food&&v.food[s.key]&&v.food[s.key].r>0);
     return `<div class="visit-card">
       <div class="visit-hdr">
         <span class="visit-date-lbl">${fmtDate(v.date)}${v.price?` · ${PRICE_LABELS[v.price]}`:''}</span>
-        <span>${renderRating(v.rating,5,13)}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${renderRating(v.rating,5,13)}
+          <button class="visit-del-btn" onclick="deleteVisit(${p.id},${realIdx})" title="Rimuovi visita">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
       </div>
       ${foodSections.map(s=>`
         <div class="visit-section-row">
@@ -1222,7 +1314,8 @@ function renderMap(){
       title:p.name,
       icon:{
         path:'M12 1.6 L14.1 9.9 L22.4 12 L14.1 14.1 L12 22.4 L9.9 14.1 L1.6 12 L9.9 9.9 Z',
-        fillColor:'#1B2FE8',fillOpacity:1,strokeWeight:0,scale:1.1,
+        fillColor: p.rating>=4 ? '#F0A500' : '#1B2FE8',
+        fillOpacity:1,strokeWeight:0,scale:1.1,
         anchor:new google.maps.Point(12,12),
       }
     });
@@ -1255,6 +1348,169 @@ function openIG(val){
   if(!val) return;
   let url = val.startsWith('http') ? val : `https://www.instagram.com/${val.replace(/^@/,'')}`;
   window.open(url,'_blank');
+}
+
+// ─── DARK MODE ───
+function toggleDark(){
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('sl4_dark', isDark?'1':'0');
+  const btn = document.getElementById('darkToggle');
+  if(btn) btn.textContent = isDark ? '☀️' : '🌙';
+}
+(function initDark(){
+  if(localStorage.getItem('sl4_dark')==='1'){
+    document.body.classList.add('dark');
+    const btn = document.getElementById('darkToggle');
+    if(btn) btn.textContent='☀️';
+  }
+})();
+
+// ─── STATISTICHE ───
+function renderStats(){
+  const s = computeStats();
+  const allVisits = places.reduce((acc,p)=>acc+(p.visits||[]).length,0);
+  const totalVisits = s.total + allVisits;
+  // avg rating (only rated)
+  const rated = places.filter(p=>p.rating>0);
+  const avgGlobal = rated.length ? (rated.reduce((a,p)=>a+p.rating,0)/rated.length).toFixed(1) : '—';
+  // avg by type
+  const avgByType = ['ristorante','pizzeria','bar'].map(t=>{
+    const tp = places.filter(p=>p.type===t && p.rating>0);
+    return {t, avg: tp.length ? (tp.reduce((a,p)=>a+p.rating,0)/tp.length).toFixed(1) : '—', n: tp.length};
+  });
+  // best food section
+  const foodAvg = FOOD_SECTIONS.map(s=>{
+    const scores = places.flatMap(p=>{
+      const scores2=[];
+      (p.visits||[]).forEach(v=>{ if(v.food&&v.food[s.key]&&v.food[s.key].r>0) scores2.push(v.food[s.key].r); });
+      if(p.food&&p.food[s.key]&&p.food[s.key].r>0) scores2.push(p.food[s.key].r);
+      return scores2;
+    });
+    const avg2 = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : null;
+    return {label:s.label, avg:avg2, count:scores.length};
+  }).filter(x=>x.avg);
+  foodAvg.sort((a,b)=>b.avg-a.avg);
+  // top atm tags
+  const atmCount = {};
+  places.forEach(p=>(p.atm||[]).forEach(t=>{ atmCount[t]=(atmCount[t]||0)+1; }));
+  const topAtm = Object.entries(atmCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  // most visited place
+  const mostVisited = [...places].sort((a,b)=>(b.visits||[]).length-(a.visits||[]).length)[0];
+  // price distribution
+  const priceDist = [1,2,3,4].map(i=>({label:PRICE_LABELS[i], n:places.filter(p=>p.price===i).length}));
+  const maxP = Math.max(...priceDist.map(x=>x.n),1);
+
+  const typeEmoji = {ristorante:'🍽',pizzeria:'🍕',bar:'🍸'};
+  const typeLabel = {ristorante:'Ristoranti',pizzeria:'Pizzerie',bar:'Bar'};
+
+  document.getElementById('statsView').innerHTML = `
+    <div class="stats-hero">
+      <div>
+        <div class="stats-hero-num">${s.total}</div>
+        <div class="stats-hero-label">Posti salvati</div>
+      </div>
+      <div class="stats-hero-right">
+        <div class="stats-hero-sub">★ ${avgGlobal} medio</div>
+        <div class="stats-hero-sub2">${totalVisits} visite totali</div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-label">Valutati</div>
+        <div class="stat-card-val">${s.rated}</div>
+        <div class="stat-card-sub">${s.total - s.rated} da valutare</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Top (4+⭐)</div>
+        <div class="stat-card-val">${s.top}</div>
+        <div class="stat-card-sub">${s.rated ? Math.round(s.top/s.rated*100) : 0}% dei valutati</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Note scritte</div>
+        <div class="stat-card-val">${s.notes}</div>
+        <div class="stat-card-sub">sezioni cibo</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Più visitato</div>
+        <div class="stat-card-val" style="font-size:16px;letter-spacing:-.3px;margin-top:4px">${mostVisited&&(mostVisited.visits||[]).length>0?esc(mostVisited.name.split(' ').slice(0,2).join(' ')):'—'}</div>
+        <div class="stat-card-sub">${mostVisited&&(mostVisited.visits||[]).length>0?(mostVisited.visits.length+1)+' visite':''}</div>
+      </div>
+    </div>
+    <div class="stat-section">
+      <div class="stat-section-title">Voto medio per tipo</div>
+      ${avgByType.map(({t,avg,n})=>`<div class="stat-bar-row">
+        <div class="stat-bar-lbl">${typeEmoji[t]} ${typeLabel[t]}</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${avg!=='—'?Math.round(avg/5*100):0}%"></div></div>
+        <div class="stat-bar-num">${avg}</div>
+      </div>`).join('')}
+    </div>
+    ${foodAvg.length ? `<div class="stat-section">
+      <div class="stat-section-title">Sezioni cibo più apprezzate</div>
+      ${foodAvg.map(f=>`<div class="stat-bar-row">
+        <div class="stat-bar-lbl">${f.label}</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${Math.round(f.avg/5*100)}%"></div></div>
+        <div class="stat-bar-num">${f.avg}</div>
+      </div>`).join('')}
+    </div>`:''}
+    <div class="stat-section">
+      <div class="stat-section-title">Fascia di prezzo</div>
+      ${priceDist.map(({label,n})=>`<div class="stat-bar-row">
+        <div class="stat-bar-lbl">${label}</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${Math.round(n/maxP*100)}%"></div></div>
+        <div class="stat-bar-num">${n}</div>
+      </div>`).join('')}
+    </div>
+    ${topAtm.length ? `<div class="stat-section">
+      <div class="stat-section-title">Atmosfere preferite</div>
+      <div style="display:flex;flex-wrap:wrap;margin-top:4px">
+        ${topAtm.map(([t,n])=>`<span class="stat-tag">${t}<span class="stat-tag-count">${n}</span></span>`).join('')}
+      </div>
+    </div>` : ''}
+  `;
+}
+
+// ─── DELETE VISIT ───
+function deleteVisit(placeId, visitIdx){
+  const p = places.find(x=>x.id===placeId); if(!p) return;
+  if(!confirm('Rimuovere questa visita dallo storico?')) return;
+  p.visits.splice(visitIdx,1);
+  save(); openDetail(placeId); toast('Visita rimossa');
+}
+
+// ─── MAP FILTER ───
+let _mapFilter = 'tutti';
+function setMapFilter(el){
+  _mapFilter = el.dataset.mf;
+  document.querySelectorAll('.map-fchip').forEach(c=>c.classList.toggle('on',c===el));
+  renderMapMarkers();
+}
+function renderMapMarkers(){
+  if(!mapMarkers.length&&!mapInstance) return;
+  const filtered = places.filter(p=>{
+    if(!p.lat||!p.lng) return false;
+    if(_mapFilter==='tutti') return true;
+    if(_mapFilter==='top') return p.rating>=4;
+    return p.type===_mapFilter;
+  });
+  const allWithCoords = places.filter(p=>p.lat&&p.lng);
+  mapMarkers.forEach(m=>m.setMap(null));
+  mapMarkers=[];
+  allWithCoords.forEach(p=>{
+    const show = filtered.includes(p);
+    const marker = new google.maps.Marker({
+      position:{lat:p.lat,lng:p.lng},
+      map: show ? mapInstance : null,
+      title:p.name,
+      icon:{
+        path:'M12 1.6 L14.1 9.9 L22.4 12 L14.1 14.1 L12 22.4 L9.9 14.1 L1.6 12 L9.9 9.9 Z',
+        fillColor: p.rating>=4 ? '#F0A500' : '#1B2FE8',
+        fillOpacity:1,strokeWeight:0,scale:1.1,
+        anchor:new google.maps.Point(12,12),
+      }
+    });
+    marker.addListener('click',()=>openDetail(p.id));
+    mapMarkers.push(marker);
+  });
 }
 
 // ─── SORTEGGIO ───
@@ -1292,6 +1548,19 @@ function getSortPool(){
   if(_sortFilter.price) pool=pool.filter(p=>p.price===_sortFilter.price);
   return pool;
 }
+function weightedRandom(pool){
+  if(!pool.length) return null;
+  const today = new Date();
+  const weights = pool.map(p=>{
+    const lastDate = p.date ? new Date(p.date) : new Date(0);
+    const daysSince = Math.max(1, Math.round((today - lastDate)/86400000));
+    return Math.sqrt(daysSince) * (0.5 + p.rating * 0.1);
+  });
+  const total = weights.reduce((a,b)=>a+b,0);
+  let r = Math.random() * total;
+  for(let i=0;i<pool.length;i++){ r-=weights[i]; if(r<=0) return pool[i]; }
+  return pool[pool.length-1];
+}
 function runSorteggio(){
   clearTimeout(_sortSpinTimer);
   const pool = getSortPool();
@@ -1308,7 +1577,7 @@ function runSorteggio(){
   goBtn.disabled=true; goBtn.style.opacity='.4';
   _sortResult=null;
 
-  const chosen = pool[Math.floor(Math.random()*pool.length)];
+  const chosen = weightedRandom(pool);
   const N = 28;
   const extended = [];
   for(let i=0;i<N;i++) extended.push(pool[Math.floor(Math.random()*pool.length)]);
