@@ -312,6 +312,39 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 .toast{position:fixed;bottom:calc(var(--sb)+24px);left:50%;transform:translateX(-50%) translateY(12px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;transition:all .22s;pointer-events:none;z-index:400;white-space:nowrap;box-shadow:var(--shadow-lg)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* ─── SPLASH ─── */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(145deg,#1B2FE8 0%,#6C47FF 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;transition:opacity .45s ease,transform .45s ease;
+}
+#splash.hide{opacity:0;transform:scale(1.04);pointer-events:none}
+.splash-mark{
+  width:72px;height:72px;border-radius:24px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  animation:splash-pop .55s cubic-bezier(0.34,1.5,0.64,1) both;
+  margin-bottom:18px;
+}
+.splash-logo{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:32px;font-weight:800;
+  color:#fff;letter-spacing:-1.2px;
+  animation:splash-up .55s .12s cubic-bezier(0.34,1.3,0.64,1) both;
+}
+.splash-logo em{color:rgba(255,255,255,.65);font-style:normal}
+.splash-sub{
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.5);letter-spacing:.4px;margin-top:6px;
+  animation:splash-up .5s .22s cubic-bezier(0.34,1.2,0.64,1) both;
+}
+.splash-dots{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;
+}
+.splash-dots svg{position:absolute;opacity:.12}
+@keyframes splash-pop{from{opacity:0;transform:scale(.6) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(-4deg)}}
+@keyframes splash-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
 /* ─── COSMIC DETAILS ─── */
 .star-field{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
 .star-dot{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s)}
@@ -452,6 +485,24 @@ function gm_authFailure(){
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsaH8uMWb55Ew0L9sk176vj20RP5jM2Oo&libraries=places&callback=initGooglePlaces" async defer></script>
 </head>
 <body style="font-size: 8px">
+<div id="splash" aria-hidden="true">
+  <div class="splash-dots">
+    <svg width="32" height="32" style="top:8%;left:10%" viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 4 L60 56 L4 56 Z"/><circle cx="30" cy="44" r="2.5" fill="#fff"/><circle cx="40" cy="42" r="2" fill="#fff"/></svg>
+    <svg width="22" height="22" style="top:15%;right:12%" viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 4 L60 56 L4 56 Z"/><circle cx="26" cy="46" r="2" fill="#fff"/></svg>
+    <svg width="26" height="26" style="bottom:20%;left:8%" viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 4 L60 56 L4 56 Z"/><circle cx="36" cy="44" r="2" fill="#fff"/></svg>
+    <svg width="18" height="18" style="bottom:14%;right:10%" viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 4 L60 56 L4 56 Z"/></svg>
+    <svg width="14" height="14" style="top:42%;left:6%" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2l1.4 4.2a2 2 0 0 0 1.3 1.3L19 9l-4.3 1.5a2 2 0 0 0-1.3 1.3L12 16l-1.4-4.2a2 2 0 0 0-1.3-1.3L5 9l4.3-1.5a2 2 0 0 0 1.3-1.3Z"/></svg>
+    <svg width="12" height="12" style="top:30%;right:8%" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2l1.4 4.2a2 2 0 0 0 1.3 1.3L19 9l-4.3 1.5a2 2 0 0 0-1.3 1.3L12 16l-1.4-4.2a2 2 0 0 0-1.3-1.3L5 9l4.3-1.5a2 2 0 0 0 1.3-1.3Z"/></svg>
+  </div>
+  <div class="splash-mark">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+      <path d="M12 1.6 L14.1 9.9 L22.4 12 L14.1 14.1 L12 22.4 L9.9 14.1 L1.6 12 L9.9 9.9 Z" fill="#fff"/>
+    </svg>
+  </div>
+  <div class="splash-logo">Bocco<em>nauta</em></div>
+  <div class="splash-sub">Il tuo diario dei sapori</div>
+</div>
+
 <div id="app">
 
   <!-- DOODLE BACKGROUND -->
@@ -1624,6 +1675,15 @@ function toast(msg){
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function cap(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):s; }
 function fmtDate(d){ if(!d)return ''; const[y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
+
+// ─── SPLASH ───
+(function(){
+  const splash = document.getElementById('splash');
+  setTimeout(()=>{
+    splash.classList.add('hide');
+    setTimeout(()=>splash.remove(), 480);
+  }, 1300);
+})();
 
 // ─── INIT ───
 checkBadges();
