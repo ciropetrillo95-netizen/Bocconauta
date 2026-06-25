@@ -426,9 +426,8 @@ function gm_authFailure(){
         <span class="stasera-left">🍽 Dove vado stasera?</span>
         <span class="stasera-right"><span class="stasera-pill" id="topBadge">0 top</span> →</span>
       </button>
-      <button class="stasera-btn" onclick="openSorteggio()" style="flex:.8;justify-content:center;gap:8px;padding:17px 14px">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/><path d="M8 21H3v-5"/></svg>
-        Sorteggia
+      <button class="stasera-btn" onclick="openSorteggio()" style="flex:.8;justify-content:center;gap:8px;padding:17px 14px;font-size:15px">
+        🎲 Sorteggia
       </button>
     </div>
     <div class="search-wrap" id="sw">
@@ -1282,12 +1281,12 @@ function runSorteggio(){
   drum.appendChild(track);
 
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    track.style.transition = `transform 2s cubic-bezier(0.12, 0.98, 0.28, 1)`;
+    track.style.transition = `transform 2.6s cubic-bezier(0.12, 0.98, 0.28, 1)`;
     track.style.transform = `translateY(-${N * ITEM_H}px)`;
     _sortSpinTimer = setTimeout(()=>{
       _sortResult = chosen;
       goBtn.disabled=false; goBtn.style.opacity='1';
-    }, 2050);
+    }, 2650);
   }));
 }
 function goToSortResult(){
