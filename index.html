@@ -308,6 +308,40 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
   letter-spacing:.3px;
 }
 .pcard-unrated-dot{width:7px;height:7px;border-radius:50%;background:var(--tomato);flex-shrink:0;margin-top:1px}
+
+/* ─── LIST SEARCH + SORT ─── */
+.list-search{position:relative;margin:10px 16px 0;flex-shrink:0}
+.list-search input{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:10px 12px 10px 38px;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--ink);outline:none;transition:border-color .2s;box-shadow:var(--shadow-sm)}
+.list-search input:focus{border-color:var(--blue)}
+.list-search input::placeholder{color:var(--faint)}
+.list-search-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--faint);display:flex;pointer-events:none}
+.sort-bar{display:flex;gap:7px;padding:8px 16px 0;flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.sort-bar::-webkit-scrollbar{display:none}
+.sort-btn{flex-shrink:0;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--fb);font-weight:600;white-space:nowrap;transition:all .15s}
+.sort-btn.on{background:var(--blue-t);border-color:var(--blue);color:var(--blue)}
+
+/* ─── PRICE ─── */
+.price-row{display:flex;gap:7px;padding:0 16px;margin-top:14px}
+.price-opt{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:9px 4px;text-align:center;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;font-family:var(--fb)}
+.price-opt.on{background:var(--blue-t);border-color:var(--blue);color:var(--blue)}
+.pc-price{font-size:11px;color:var(--muted);font-weight:700;margin-left:2px;opacity:.8}
+
+/* ─── STORICO VISITE ─── */
+.visit-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 15px;margin:0 16px 10px;box-shadow:var(--shadow-sm)}
+.visit-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.visit-date-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.visit-section-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-top:1px solid var(--line)}
+.visit-section-lbl{font-size:12px;color:var(--muted);font-weight:600}
+.visit-food-note{font-size:11.5px;color:var(--faint);margin-bottom:4px;padding-left:2px;line-height:1.4}
+.visit-note-text{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;font-style:italic;border-top:1px solid var(--line);padding-top:8px}
+.nuova-visita-btn{margin:18px 16px 0;width:calc(100% - 32px);background:var(--card);border:1.5px dashed var(--line2);border-radius:16px;padding:14px;color:var(--muted);font-family:var(--fb);font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+.nuova-visita-btn:hover,.nuova-visita-btn:active{background:var(--blue-t);border-color:var(--blue);color:var(--blue)}
+
+/* ─── MAP VIEW ─── */
+.map-view{flex:1;position:relative;overflow:hidden}
+#map-canvas{position:absolute;inset:0}
+.map-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:12px;text-align:center;padding:28px}
+.map-empty-title{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--ink)}
 </style>
 <script>
 // Chiamata da Google Maps se la chiave API è bloccata o non valida
@@ -356,7 +390,8 @@ function gm_authFailure(){
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab on" onclick="switchTab('posti',this)" id="tabPosti">🍽 I miei posti</button>
+    <button class="tab on" onclick="switchTab('posti',this)" id="tabPosti">🍽 Posti</button>
+    <button class="tab" onclick="switchTab('mappa',this)" id="tabMappa">🗺 Mappa</button>
     <button class="tab" onclick="switchTab('badge',this)" id="badgeTab">🏅 Badge <span class="tab-badge" id="newBadgeCount" style="display:none">0</span></button>
   </div>
 
@@ -375,12 +410,21 @@ function gm_authFailure(){
         oninput="onSearch(this.value)" onblur="setTimeout(hideAC,200)">
       <div class="ac" id="ac"></div>
     </div>
+    <div class="list-search">
+      <span class="list-search-ico"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <input type="text" placeholder="Cerca nei tuoi posti…" oninput="onListSearch(this.value)" id="listSearch" autocomplete="off">
+    </div>
+    <div class="sort-bar">
+      <button class="sort-btn on" onclick="setSort('date-desc',this)">📅 Recenti</button>
+      <button class="sort-btn" onclick="setSort('rating-desc',this)">⭐ Voto</button>
+      <button class="sort-btn" onclick="setSort('name-asc',this)">🔤 Nome</button>
+    </div>
     <div class="filters" id="filters">
       <div class="chip on" data-f="tutti" onclick="setFilter(this)">Tutti</div>
       <div class="chip" data-f="ristorante" onclick="setFilter(this)">Ristoranti</div>
       <div class="chip" data-f="pizzeria" onclick="setFilter(this)">Pizzerie</div>
       <div class="chip" data-f="bar" onclick="setFilter(this)">Bar & Locali</div>
-      <div class="chip" data-f="top" onclick="setFilter(this)">🍕 Top</div>
+      <div class="chip" data-f="top" onclick="setFilter(this)">⭐ Top</div>
     </div>
     <div class="scroll" id="list"></div>
   </div>
@@ -388,6 +432,13 @@ function gm_authFailure(){
   <!-- VIEW: BADGE -->
   <div class="view" id="view-badge" data-screen-label="Badge">
     <div class="badge-scroll" id="badgeView"></div>
+  </div>
+
+  <!-- VIEW: MAPPA -->
+  <div class="view" id="view-mappa" data-screen-label="Mappa">
+    <div class="map-view" id="mapView">
+      <div id="map-canvas"></div>
+    </div>
   </div>
 
 </div>
@@ -522,21 +573,25 @@ const BADGES = [
 // ─── DATA ───
 const DEMO = [
   {id:1,name:"Trattoria da Nino",type:"ristorante",address:"Via Roma 12, Caserta",ig:"https://www.instagram.com/",
+   lat:41.0725,lng:14.3320,price:2,
    rating:5,date:"2025-03-15",note:"Uno dei posti migliori in zona.",
    food:{antipasti:{r:4,n:"Mozzarella di bufala straordinaria"},primo:{r:5,n:"Ragù napoletano da sogno"},dolce:{r:3,n:"Tiramisù nella media"},bevande:{r:4,n:"Vino della casa ottimo"}},
-   atm:["romantico","rustico","tranquillo"]},
+   atm:["romantico","rustico","tranquillo"],visits:[]},
   {id:2,name:"Pizzeria Starita",type:"pizzeria",address:"Via Toledo 27, Napoli",ig:"https://www.instagram.com/",
+   lat:40.8498,lng:14.2502,price:1,
    rating:4,date:"2025-04-02",note:"",
    food:{antipasti:{r:5,n:"Frittatina di pasta incredibile"},primo:{r:4,n:"Pizza fritta top"},dolce:{r:0,n:""},bevande:{r:3,n:"Birra alla spina ok"}},
-   atm:["informale","vivace","economico"]},
+   atm:["informale","vivace","economico"],visits:[]},
   {id:3,name:"Bar Centrale",type:"bar",address:"Piazza Vanvitelli, Caserta",ig:"",
+   lat:41.0748,lng:14.3319,price:1,
    rating:3,date:"2025-05-10",note:"",
    food:{antipasti:{r:0,n:""},primo:{r:0,n:""},dolce:{r:3,n:"Cornetto buono"},bevande:{r:3,n:"Caffè nella media"}},
-   atm:["veloce","informale"]},
+   atm:["veloce","informale"],visits:[]},
   {id:4,name:"L'Osteria del Porto",type:"ristorante",address:"Lungomolo 8, Caserta",ig:"",
+   lat:41.0712,lng:14.3298,price:0,
    rating:0,date:"2025-06-01",note:"",
    food:{antipasti:{r:0,n:""},primo:{r:0,n:""},dolce:{r:0,n:""},bevande:{r:0,n:""}},
-   atm:[]},
+   atm:[],visits:[]},
 ];
 
 const GKEY = 'AIzaSyAsaH8uMWb55Ew0L9sk176vj20RP5jM2Oo';
@@ -558,10 +613,23 @@ const FOOD_SECTIONS = [
 const GODIMENTO_TXT = ["—","Meh","Nella media","Buono","Molto buono","Godimento totale"];
 
 let places = JSON.parse(localStorage.getItem('sl4')||'null') || JSON.parse(JSON.stringify(DEMO));
+// Migrate old entries: add missing fields
+places.forEach(p=>{
+  if(!p.visits) p.visits=[];
+  if(p.price===undefined) p.price=0;
+  if(!p.lat) p.lat=null;
+  if(!p.lng) p.lng=null;
+  if(!p.food) p.food={};
+  ['antipasti','primo','dolce','bevande'].forEach(k=>{ if(!p.food[k]) p.food[k]={r:0,n:''}; });
+});
 let unlockedBadges = JSON.parse(localStorage.getItem('sl4_badges')||'{}');
 let activeFilter = 'tutti';
+let searchQuery = '';
+let sortBy = 'date-desc';
 let stTimer;
 let unlockQueue = [];
+let mapInstance = null;
+let mapMarkers = [];
 
 function save(){
   localStorage.setItem('sl4', JSON.stringify(places));
@@ -574,7 +642,7 @@ function paintChrome(){
   // brand mark is static SVG in HTML
   // tabs — plain text, no SVG to avoid Safari render issues
   const tp = document.getElementById('tabPosti');
-  if(tp) tp.textContent = '🍽 I miei posti';
+  if(tp) tp.textContent = '🍽 Posti';
   const bt = document.getElementById('badgeTab');
   if(bt) bt.innerHTML = '🏅 Badge <span class="tab-badge" id="newBadgeCount" style="display:none">0</span>';
   // stasera button
@@ -590,7 +658,7 @@ function paintChrome(){
     '<div class="chip" data-f="ristorante" onclick="setFilter(this)">Ristoranti</div>'+
     '<div class="chip" data-f="pizzeria" onclick="setFilter(this)">Pizzerie</div>'+
     '<div class="chip" data-f="bar" onclick="setFilter(this)">Bar & Locali</div>'+
-    '<div class="chip" data-f="top" onclick="setFilter(this)">🍕 Top</div>';
+    '<div class="chip" data-f="top" onclick="setFilter(this)">⭐ Top</div>';
 }
 
 // ─── STATS ───
@@ -671,6 +739,8 @@ function switchTab(name, el){
     sessionStorage.setItem('sl4_seen_badges', count);
     const nb = document.getElementById('newBadgeCount');
     if(nb) nb.style.display='none';
+  } else if(name==='mappa'){
+    renderMap();
   }
 }
 
@@ -741,11 +811,20 @@ function showBadgeDetail(id){
 }
 
 // ─── RENDER LIST ───
+const PRICE_LABELS = ['','€','€€','€€€','€€€€'];
+
 function render(){
   const list = document.getElementById('list');
-  let data = [...places].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  let data = [...places];
   if(activeFilter==='top') data=data.filter(p=>p.rating>=4);
   else if(activeFilter!=='tutti') data=data.filter(p=>p.type===activeFilter);
+  if(searchQuery){
+    const q=searchQuery.toLowerCase();
+    data=data.filter(p=>p.name.toLowerCase().includes(q)||(p.address||'').toLowerCase().includes(q));
+  }
+  if(sortBy==='rating-desc') data.sort((a,b)=>b.rating-a.rating||(new Date(b.date)-new Date(a.date)));
+  else if(sortBy==='name-asc') data.sort((a,b)=>a.name.localeCompare(b.name,'it'));
+  else data.sort((a,b)=>new Date(b.date)-new Date(a.date));
 
   const stats = computeStats();
   document.getElementById('hdrMeta').innerHTML = stats.total + ' posti';
@@ -762,7 +841,7 @@ function render(){
       <div class="pc-type" style="background:${TYPE_TINT[p.type]||'var(--blue-t)'};color:${TYPE_COLOR[p.type]||'var(--blue)'}">${TYPE_EMOJI[p.type]||'🍽'}</div>
       <div class="pc-left">
         <div class="pc-name">${esc(p.name)}</div>
-        <div class="pc-sub">${cap(p.type)} · ${fmtDate(p.date)}</div>
+        <div class="pc-sub">${cap(p.type)}${p.price?`<span class="pc-price">${PRICE_LABELS[p.price]}</span>`:''} · ${fmtDate(p.date)}${p.visits&&p.visits.length?` · ${p.visits.length+1} vis.`:''}</div>
       </div>
       <div class="pc-right">
         <div class="pc-pizze">${renderRating(p.rating,5,15)}</div>
@@ -795,6 +874,25 @@ function buildSheetHTML(p){
 
   const tags = ATM_TAGS.map(t=>`<div class="atm-tag${(p.atm||[]).includes(t)?' on':''}" onclick="toggleAtm(${p.id},'${t}',this)">${t}</div>`).join('');
 
+  const visits = p.visits||[];
+  const visitsHTML = visits.length ? visits.slice().reverse().map(v=>{
+    const foodSections = FOOD_SECTIONS.filter(s=>v.food&&v.food[s.key]&&v.food[s.key].r>0);
+    return `<div class="visit-card">
+      <div class="visit-hdr">
+        <span class="visit-date-lbl">${fmtDate(v.date)}${v.price?` · ${PRICE_LABELS[v.price]}`:''}</span>
+        <span>${renderRating(v.rating,5,13)}</span>
+      </div>
+      ${foodSections.map(s=>`
+        <div class="visit-section-row">
+          <span class="visit-section-lbl">${s.label}</span>
+          ${renderRating(v.food[s.key].r,5,12)}
+        </div>
+        ${v.food[s.key].n?`<div class="visit-food-note">${esc(v.food[s.key].n)}</div>`:''}
+      `).join('')}
+      ${v.note?`<div class="visit-note-text">${esc(v.note)}</div>`:''}
+    </div>`;
+  }).join('') : '';
+
   return `
     <div class="sh-hdr">
       <div class="sh-hdr-left">
@@ -813,6 +911,10 @@ function buildSheetHTML(p){
         <div class="gr-sub" id="gr-sub-${p.id}">${GODIMENTO_TXT[p.rating]}</div>
       </div>
     </div>
+    <div class="sec-title">Fascia di prezzo</div>
+    <div class="price-row">
+      ${[1,2,3,4].map(i=>`<div class="price-opt${(p.price||0)===i?' on':''}" onclick="setPriceLevel(${p.id},${i})">${PRICE_LABELS[i]}</div>`).join('')}
+    </div>
     ${p.ig
       ?`<div class="ig-strip"><button class="ig-btn" onclick="openIG('${p.ig}')"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1B2FE8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="#1B2FE8" stroke="none"/></svg> Apri Instagram</button></div>`
       :''
@@ -824,10 +926,15 @@ function buildSheetHTML(p){
     <div class="sec-title">Note generali</div>
     <textarea class="final-note" rows="3" placeholder="Impressioni generali, consigli per la prossima volta…" onchange="saveNote(${p.id},this.value)">${esc(p.note)}</textarea>
     <button class="save-btn" onclick="saveAll(${p.id})">Salva</button>
-    <div style="padding:0 16px;margin-top:10px">
+    <button class="nuova-visita-btn" onclick="newVisit(${p.id})">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Registra nuova visita
+    </button>
+    ${visits.length?`<div class="sec-title">Storico visite (${visits.length})</div>${visitsHTML}`:''}
+    <div style="padding:16px 16px 0">
       <button onclick="deletePlace(${p.id})" style="width:100%;background:none;border:1.5px solid var(--line);border-radius:14px;padding:13px;color:var(--faint);font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s" onmouseover="this.style.borderColor='var(--tomato)';this.style.color='var(--tomato)'" onmouseout="this.style.borderColor='var(--line)';this.style.color='var(--faint)'">🗑 Rimuovi locale</button>
     </div>
-    <div style="height:20px"></div>`;
+    <div style="height:24px"></div>`;
 }
 
 function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open'); }
@@ -885,10 +992,10 @@ let sdkReady = false;
 
 function initGooglePlaces(){
   autocompleteService = new google.maps.places.AutocompleteService();
-  // PlacesService needs a map div (hidden)
   const dummy = document.createElement('div');
   placesService = new google.maps.places.PlacesService(dummy);
   sdkReady = true;
+  initMap();
 }
 
 function onSearch(val){
@@ -930,11 +1037,16 @@ function addPlaceFromPrediction(i){
   const sec=pred.structured_formatting?.secondary_text||'';
   if(places.find(x=>x.name===main)){toast('Già in lista!');return;}
   // Fetch details for types
-  placesService.getDetails({placeId:pred.place_id, fields:['types','formatted_address']}, (place, status)=>{
+  placesService.getDetails({placeId:pred.place_id, fields:['types','formatted_address','geometry']}, (place, status)=>{
     const types = place?.types||[];
     const type = detectType(types);
     const address = place?.formatted_address||sec;
-    const newPlace = {id:Date.now(),name:main,type,address,ig:'',rating:0,date:new Date().toISOString().split('T')[0],note:'',food:{antipasti:{r:0,n:''},primo:{r:0,n:''},dolce:{r:0,n:''},bevande:{r:0,n:''}},atm:[]};
+    const loc = place?.geometry?.location;
+    const newPlace = {id:Date.now(),name:main,type,address,ig:'',
+      lat:loc?loc.lat():null,lng:loc?loc.lng():null,price:0,
+      rating:0,date:new Date().toISOString().split('T')[0],note:'',
+      food:{antipasti:{r:0,n:''},primo:{r:0,n:''},dolce:{r:0,n:''},bevande:{r:0,n:''}},
+      atm:[],visits:[]};
     places.unshift(newPlace);
     save();
     document.getElementById('sb').value=''; hideAC();
@@ -961,12 +1073,94 @@ function openStasera(){
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
 function closeModalOutside(e){ if(e.target.id==='modalOverlay') closeModal(); }
 
-// ─── FILTER ───
+// ─── FILTER / SORT / SEARCH ───
 function setFilter(el){
   activeFilter=el.dataset.f;
   document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===el));
   render();
 }
+function setSort(key,btn){
+  sortBy=key;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('on',b===btn));
+  render();
+}
+function onListSearch(val){
+  searchQuery=val.trim();
+  render();
+}
+
+// ─── PRICE ───
+function setPriceLevel(id,level){
+  const p=places.find(x=>x.id===id); if(!p) return;
+  p.price = p.price===level ? 0 : level;
+  save();
+  document.querySelectorAll('.price-opt').forEach((el,i)=>el.classList.toggle('on',i+1===p.price));
+  render();
+}
+
+// ─── NUOVA VISITA ───
+function newVisit(id){
+  const p=places.find(x=>x.id===id); if(!p) return;
+  if(!p.rating && !Object.values(p.food||{}).some(f=>f.r>0) && !p.note){
+    toast('Aggiungi prima una valutazione'); return;
+  }
+  if(!confirm('Archivia questa visita e inizia una nuova scheda?')) return;
+  if(!p.visits) p.visits=[];
+  p.visits.push({
+    date:p.date||new Date().toISOString().split('T')[0],
+    rating:p.rating, food:JSON.parse(JSON.stringify(p.food||{})),
+    note:p.note||'', atm:JSON.parse(JSON.stringify(p.atm||[])), price:p.price||0,
+  });
+  p.rating=0; p.food={antipasti:{r:0,n:''},primo:{r:0,n:''},dolce:{r:0,n:''},bevande:{r:0,n:''}};
+  p.note=''; p.price=0;
+  p.date=new Date().toISOString().split('T')[0];
+  save(); openDetail(id); toast('Visita archiviata!');
+}
+
+// ─── MAP ───
+let _mapReady = false;
+function initMap(){
+  _mapReady = true;
+  if(document.getElementById('view-mappa').classList.contains('on')) renderMap();
+}
+function renderMap(){
+  if(!_mapReady || !window.google) return;
+  const canvas = document.getElementById('map-canvas');
+  if(!canvas) return;
+  const withCoords = places.filter(p=>p.lat&&p.lng);
+  const center = withCoords.length
+    ? {lat: withCoords.reduce((s,p)=>s+p.lat,0)/withCoords.length, lng: withCoords.reduce((s,p)=>s+p.lng,0)/withCoords.length}
+    : {lat:41.07, lng:14.33};
+  if(!mapInstance){
+    mapInstance = new google.maps.Map(canvas,{
+      center, zoom:12,
+      mapTypeControl:false,streetViewControl:false,fullscreenControl:false,
+      styles:[{featureType:'poi',stylers:[{visibility:'off'}]},{featureType:'transit',stylers:[{visibility:'off'}]}]
+    });
+  } else {
+    mapInstance.setCenter(center);
+  }
+  mapMarkers.forEach(m=>m.setMap(null));
+  mapMarkers=[];
+  withCoords.forEach(p=>{
+    const marker = new google.maps.Marker({
+      position:{lat:p.lat,lng:p.lng},
+      map:mapInstance,
+      title:p.name,
+      icon:{
+        path:'M12 1.6 L14.1 9.9 L22.4 12 L14.1 14.1 L12 22.4 L9.9 14.1 L1.6 12 L9.9 9.9 Z',
+        fillColor:'#1B2FE8',fillOpacity:1,strokeWeight:0,scale:1.1,
+        anchor:new google.maps.Point(12,12),
+      }
+    });
+    marker.addListener('click',()=>openDetail(p.id));
+    mapMarkers.push(marker);
+  });
+  if(!withCoords.length){
+    canvas.innerHTML='<div class="map-empty"><div style="font-size:40px">🗺</div><div class="map-empty-title">Nessun posto con coordinate</div><p style="font-size:13px;color:var(--muted);margin-top:8px">Aggiungi posti tramite la ricerca Google per vederli sulla mappa.</p></div>';
+  }
+}
+
 function openIG(url){ window.open(url,'_blank'); }
 
 // ─── TOAST ───
