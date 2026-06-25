@@ -315,16 +315,14 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 .sort-modal{background:var(--bg);border-radius:28px 28px 0 0;width:100%;max-width:480px;padding:8px 0 calc(var(--sb)+28px);transform:translateY(100%);transition:transform .36s cubic-bezier(.32,.72,0,1)}
 .sort-overlay.open .sort-modal{transform:translateY(0)}
 .sort-handle{width:42px;height:5px;background:var(--line2);border-radius:3px;margin:11px auto 20px}
-.sort-drum{margin:0 16px 20px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px 20px;text-align:center;overflow:hidden;position:relative;box-shadow:var(--shadow)}
-.sort-drum::before,.sort-drum::after{content:'';position:absolute;left:0;right:0;height:48px;z-index:2;pointer-events:none}
+.sort-drum{margin:0 16px 20px;background:var(--card);border:1px solid var(--line);border-radius:22px;height:88px;overflow:hidden;position:relative;box-shadow:var(--shadow)}
+.sort-drum::before,.sort-drum::after{content:'';position:absolute;left:0;right:0;height:26px;z-index:2;pointer-events:none}
 .sort-drum::before{top:0;background:linear-gradient(to bottom,var(--card),transparent)}
 .sort-drum::after{bottom:0;background:linear-gradient(to top,var(--card),transparent)}
-.sort-slot{font-family:var(--fd);font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.5px;line-height:1.15;transition:none;min-height:28px}
-.sort-slot.spinning{animation:slotSpin .08s steps(1) infinite}
-@keyframes slotSpin{0%{opacity:1}50%{opacity:.4}}
-.sort-meta{font-size:13px;color:var(--muted);margin-top:7px;font-weight:600;min-height:20px}
-.sort-result-type{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-t);border-radius:999px;padding:3px 10px;margin-top:8px}
-.sort-result-price{font-size:20px;font-weight:800;color:var(--muted);margin-top:4px}
+.sort-drum-track{display:flex;flex-direction:column;will-change:transform}
+.sort-drum-item{height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;flex-shrink:0;text-align:center}
+.sort-drum-name{font-family:var(--fd);font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.5px;line-height:1.2}
+.sort-drum-sub{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:5px}
 .sort-filters{display:flex;gap:8px;padding:0 16px 18px;flex-wrap:wrap}
 .sort-filter-chip{flex-shrink:0;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--fb);font-weight:600;transition:all .15s}
 .sort-filter-chip.on{background:var(--blue-t);border-color:var(--blue);color:var(--blue)}
@@ -334,8 +332,6 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--fb
 .sort-retry-btn{background:var(--card2);border:none;border-radius:16px;padding:15px 20px;color:var(--muted);font-family:var(--fb);font-size:13.5px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
 .sort-retry-btn:active{background:var(--line)}
 .sort-empty{text-align:center;padding:12px 0 4px;color:var(--muted);font-size:13.5px;font-weight:500}
-.sort-spin-ico{animation:spinIco .5s linear infinite}
-@keyframes spinIco{to{transform:rotate(360deg)}}
 
 /* ─── LIST SEARCH + SORT ─── */
 .list-search{position:relative;margin:10px 16px 0;flex-shrink:0}
@@ -497,10 +493,7 @@ function gm_authFailure(){
 <div class="sort-overlay" id="sortOverlay" onclick="closeSorteggio(event)">
   <div class="sort-modal" onclick="event.stopPropagation()">
     <div class="sort-handle"></div>
-    <div class="sort-drum">
-      <div class="sort-slot" id="sortSlot">—</div>
-      <div class="sort-meta" id="sortMeta"></div>
-    </div>
+    <div class="sort-drum" id="sortDrum"></div>
     <div class="sort-filters" id="sortFilters"></div>
     <div class="sort-actions" id="sortActions">
       <button class="sort-retry-btn" onclick="runSorteggio()">
@@ -1255,40 +1248,47 @@ function getSortPool(){
 function runSorteggio(){
   clearTimeout(_sortSpinTimer);
   const pool = getSortPool();
-  const slot = document.getElementById('sortSlot');
-  const meta = document.getElementById('sortMeta');
+  const drum = document.getElementById('sortDrum');
   const goBtn = document.getElementById('sortGoBtn');
+  const ITEM_H = 88;
+
   if(!pool.length){
-    slot.classList.remove('spinning');
-    slot.textContent = 'Nessun posto trovato';
-    meta.textContent = 'Prova a cambiare i filtri';
-    goBtn.disabled = true; goBtn.style.opacity='.4';
-    _sortResult = null; return;
+    drum.innerHTML = `<div class="sort-drum-item"><div class="sort-drum-name" style="font-size:16px;color:var(--muted)">Nessun posto trovato</div><div class="sort-drum-sub">Cambia i filtri</div></div>`;
+    goBtn.disabled=true; goBtn.style.opacity='.4';
+    _sortResult=null; return;
   }
-  goBtn.disabled = false; goBtn.style.opacity='1';
-  const names = pool.map(p=>p.name);
-  let ticks = 0;
-  const totalTicks = 22 + Math.floor(Math.random()*10);
-  slot.classList.add('spinning');
+
+  goBtn.disabled=true; goBtn.style.opacity='.4';
+  _sortResult=null;
+
   const chosen = pool[Math.floor(Math.random()*pool.length)];
-  function tick(){
-    const fake = names[Math.floor(Math.random()*names.length)];
-    slot.textContent = ticks < totalTicks-3 ? fake : chosen.name;
-    ticks++;
-    const delay = ticks < totalTicks * 0.55 ? 60
-                : ticks < totalTicks * 0.8  ? 100
-                : ticks < totalTicks * 0.92 ? 160
-                : 220;
-    if(ticks < totalTicks){
-      _sortSpinTimer = setTimeout(tick, delay);
-    } else {
-      slot.classList.remove('spinning');
-      slot.textContent = chosen.name;
-      meta.textContent = `${cap(chosen.type)}${chosen.price?' · '+PRICE_LABELS[chosen.price]:''}${chosen.atm&&chosen.atm.length?' · '+chosen.atm.slice(0,2).join(', '):''}`;
+  const N = 28;
+  const extended = [];
+  for(let i=0;i<N;i++) extended.push(pool[Math.floor(Math.random()*pool.length)]);
+  extended.push(chosen);
+
+  const track = document.createElement('div');
+  track.className = 'sort-drum-track';
+  track.style.transform = 'translateY(0px)';
+  track.style.transition = 'none';
+  extended.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'sort-drum-item';
+    el.innerHTML = `<div class="sort-drum-name">${esc(p.name)}</div><div class="sort-drum-sub">${cap(p.type)}${p.price?' · '+PRICE_LABELS[p.price]:''}${p.atm&&p.atm.length?' · '+p.atm.slice(0,1).join(''):''}</div>`;
+    track.appendChild(el);
+  });
+
+  drum.innerHTML='';
+  drum.appendChild(track);
+
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    track.style.transition = `transform 2s cubic-bezier(0.12, 0.98, 0.28, 1)`;
+    track.style.transform = `translateY(-${N * ITEM_H}px)`;
+    _sortSpinTimer = setTimeout(()=>{
       _sortResult = chosen;
-    }
-  }
-  tick();
+      goBtn.disabled=false; goBtn.style.opacity='1';
+    }, 2050);
+  }));
 }
 function goToSortResult(){
   if(!_sortResult) return;
